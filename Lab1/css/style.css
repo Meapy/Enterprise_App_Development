@@ -23,9 +23,9 @@ Table Of Contents:
 :root {
 	--primary: #1c262f;
 	--primary-light: #212d37;
-	--secondary: #0ee951;
-	--tertiary: #00dabf;
-	--gradient: linear-gradient(to right, #0ee951, #00dabf);
+	--secondary: #0e66e9;
+	--tertiary: #003ada;
+	--gradient: linear-gradient(to right, #0e66e9, #0045da);
 }
 
 h1,
@@ -107,8 +107,8 @@ li {
 		linear,
 		left top,
 		left bottom,
-		from(#0ee951),
-		to(#00dabf)
+		from(#0e66e9),
+		to(#0028da)
 	);
 	background-clip: text;
 	-webkit-background-clip: text;
@@ -227,8 +227,8 @@ li {
 		linear,
 		left top,
 		left bottom,
-		from(#0ee951),
-		to(#00dabf)
+		from(#0e66e9),
+		to(#0028da)
 	);
 	background-clip: text;
 	-webkit-background-clip: text;
@@ -273,6 +273,11 @@ li {
 
 .para-light {
   	opacity: 0.7;
+}
+.boldOutline {
+	font-weight: bold;
+	font-weight: bold;
+	text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;
 }
 
 
@@ -369,7 +374,7 @@ li {
 	border-image-slice: 1;
 	border-width: 2px;
 	border-image-source: var(--gradient);
-	box-shadow: 5px 5px 0px 0px #0ee951;
+	box-shadow: 5px 5px 0px 0px #0e36e9;
 }
 
 
