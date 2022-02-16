@@ -81,7 +81,7 @@ if (dropdownCheck !== null) {
 var cardSlider = new Swiper(".card-slider", {
     autoplay: {
         delay: 4000,
-        disableOnInteraction: false,
+        disableOnInteraction: true,
     },
     loop: true,
     navigation: {
@@ -101,6 +101,16 @@ var cardSlider = new Swiper(".card-slider", {
         spaceBetween: 40,
         },
     },
+});
+
+var video = new Swiper(".video-slider", {
+    loop: true,
+    navigation: {
+        nextEl: ".swiper-button-next",
+        prevEl: ".swiper-button-prev",
+    },
+    slidesPerView: 1,
+    spaceBetween: 50,
 });
 
 /* BACK TO TOP BUTTON */
@@ -128,3 +138,5 @@ AOS.init({
     easing: "ease",
     once: true, // whether animation should happen only once - while scrolling down
 });
+
+

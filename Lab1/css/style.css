@@ -21,8 +21,8 @@ Table Of Contents:
 /*     General Styles     */
 /**************************/
 :root {
-	--primary: #1c262f;
-	--primary-light: #212d37;
+	--primary: #2b2d2e;
+	--primary-light: #45494b;
 	--secondary: #0e66e9;
 	--tertiary: #003ada;
 	--gradient: linear-gradient(to right, #0e66e9, #0045da);
@@ -76,16 +76,17 @@ li {
 .services,
 .work,
 .contact,
-.testimonial,
-.footer {
+.plans,
+.location{
   	background-color: var(--primary);
 }
 
 .about,
-.plans,
 .company,
 .newsletter,
-.location {
+.video,
+.testimonial,
+.footer {
   	background-color: var(--primary-light);
 }
 
@@ -276,7 +277,6 @@ li {
 }
 .boldOutline {
 	font-weight: bold;
-	font-weight: bold;
 	text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;
 }
 
@@ -416,7 +416,7 @@ li {
 }
 
 .slider-1 .swiper-container {
-	width: 86%;
+	width: 100%;
 	position: static;
 }
 
@@ -475,6 +475,11 @@ li {
 	width: 70px;
 	height: 70px;
 	border-radius: 50%;
+}
+.slider-1 iframe{
+	/* make width 30% and height 20% */
+	width: 90%;
+	height: 40rem;
 }
 
 /* Dropdown Menu */
