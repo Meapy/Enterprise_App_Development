@@ -1,114 +1,179 @@
 <!DOCTYPE html>
 <html>
+
+<head>
+    <style>
+        #div1 {
+            margin: 10px;
+            font-size: 1.25em;
+        }
+
+        * {
+            font-size: 12px;
+            font-family: 'Helvetica', Arial, Sans-Serif;
+            box-sizing: border-box;
+        }
+
+        table,
+        th,
+        td {
+            border-collapse: collapse;
+            border: solid 1px #ccc;
+            padding: 5px 20px;
+            text-align: center;
+        }
+
+        th {
+            background: #0f4871;
+            color: #fff;
+        }
+
+        tr:nth-child(2n) {
+            background: #f1f1f1;
+        }
+
+        td:hover {
+            color: #fff;
+            background: #CA293E;
+        }
+
+        td:focus {
+            background: #f44;
+        }
+
+        .editing {
+            border: 2px dotted #c9c9c9;
+        }
+
+        #edit {
+            display: none;
+        }
+    </style>
+</head>
+
 <body>
 
-<div id="demo">
-<h2>The XMLHttpRequest Object</h2>
-<button type="button" onclick="loadDoc()">Change Content</button>
-<button type="button" onclick="create_table()">Change Content</button>
-</div>
+    <div id="demo">
+        <h2>The XMLHttpRequest Object</h2>
+        <button type="button" onclick="loadDoc()">Change Content</button>
+        <button type="button" onclick="create_table()">Change Content</button>
+    </div>
 
-<script>
-function loadDoc() {
-  const xhttp = new XMLHttpRequest();
-  xhttp.onload = function() {
-    document.getElementById("demo").innerHTML =
-    this.responseText;
-  }
-  //open all the files in the same directory
-  xhttp.open("GET", "country-objects/country-by-flag.json");
-  xhttp.send();
-}
-function create_table() {
-    //wait 5 seconds
-    wait(5000);
-    // creates a table and inserts the country and capital city into the table
-    
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-            var myObj = JSON.parse(this.responseText);
-            var table = document.createElement("table");
-            var tblBody = document.createElement("tbody");
-            var table_header = document.createElement("tr");
-            table_header.innerHTML = "<th>Country</th><th>Capital city</th><th>Continent</th><th>Currency</th><th>Domain</th><th>Flag</th>";
-            tblBody.appendChild(table_header);
-            for (var i = 0; i < myObj.length; i++) {
-                var row = document.createElement("tr");
-                var country = document.createElement("td");
-                country.innerHTML = myObj[i].country;
-                var capital = document.createElement("td");
-                capital.innerHTML = myObj[i].city;
-                row.appendChild(country);
-                row.appendChild(capital);
-                tblBody.appendChild(row);
+    <script>
+        function loadDoc() {
+            const xhttp = new XMLHttpRequest();
+            xhttp.onload = function () {
+                document.getElementById("demo").innerHTML =
+                    this.responseText;
             }
-            table.appendChild(tblBody);
-            document.body.appendChild(table);
+            //open all the files in the same directory
+            xhttp.open("GET", "country-objects/country-by-flag.json");
+            xhttp.send();
         }
-    };
-    xhttp.open("GET", "country-objects/country-by-capital-city.json", true);
-    xhttp.send();
-    // add to the table the continent of each country 
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-            var myObj = JSON.parse(this.responseText);
-            var table = document.getElementsByTagName("table")[0];
-            for (var i = 0; i < myObj.length; i++) {
-                var row = table.getElementsByTagName("tr")[i+1];
-                var continent = document.createElement("td");
-                continent.innerHTML = myObj[i].continent;
-                row.appendChild(continent);
-            }
-        }
-    };
-    xhttp.open("GET", "country-objects/country-by-continent.json", true);
-    xhttp.send();
-    // add to the table the currency of each country
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-            var myObj = JSON.parse(this.responseText);
-            var table = document.getElementsByTagName("table")[0];
-            for (var i = 0; i < myObj.length; i++) {
-                var row = table.getElementsByTagName("tr")[i+1];
-                var currency = document.createElement("td");
-                currency.innerHTML = myObj[i].currency_name;
-                row.appendChild(currency);
-            }
-        }
-    };
-    xhttp.open("GET", "country-objects/country-by-currency-name.json", true);
-    xhttp.send();
-    // add to the table the domain of each country
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-            var myObj = JSON.parse(this.responseText);
-            var table = document.getElementsByTagName("table")[0];
-            for (var i = 0; i < myObj.length; i++) {
-                var row = table.getElementsByTagName("tr")[i+1];
-                var domain = document.createElement("td");
-                domain.innerHTML = myObj[i].tld;
-                row.appendChild(domain);
-            }
-        }
-    };
-    xhttp.open("GET", "country-objects/country-by-domain-tld.json", true);
-    xhttp.send();
+        function create_table() {
+            //wait 5 seconds
+            //wait(5000);
+            // creates a table and inserts the country and capital city into the table
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    var myObj = JSON.parse(this.responseText);
+                    var table = document.createElement("table");
+                    var tblBody = document.createElement("tbody");
+                    var table_header = document.createElement("tr");
+                    table_header.innerHTML = "<th>Country</th><th>Capital city</th><th>Continent</th><th>Currency</th><th>Domain</th><th>Flag</th>";
+                    tblBody.appendChild(table_header);
+                    for (var i = 0; i < myObj.length; i++) {
+                        var row = document.createElement("tr");
+                        var country = document.createElement("td");
+                        country.innerHTML = myObj[i].country;
+                        var capital = document.createElement("td");
+                        capital.innerHTML = myObj[i].city;
+                        row.appendChild(country);
+                        row.appendChild(capital);
+                        tblBody.appendChild(row);
+                    }
+                    table.appendChild(tblBody);
+                    document.body.appendChild(table);
+                }
+            };
+            xhttp.open("GET", "country-objects/country-by-capital-city.json", true);
+            xhttp.send();
+            // add to the table the continent of each country 
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    var myObj = JSON.parse(this.responseText);
+                    var table = document.getElementsByTagName("table")[0];
+                    for (var i = 0; i < myObj.length; i++) {
+                        var row = table.getElementsByTagName("tr")[i + 1];
+                        var continent = document.createElement("td");
+                        continent.innerHTML = myObj[i].continent;
+                        row.appendChild(continent);
+                    }
+                }
+            };
+            xhttp.open("GET", "country-objects/country-by-continent.json", true);
+            xhttp.send();
+            // add to the table the currency of each country
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    var myObj = JSON.parse(this.responseText);
+                    var table = document.getElementsByTagName("table")[0];
+                    for (var i = 0; i < myObj.length; i++) {
+                        var row = table.getElementsByTagName("tr")[i + 1];
+                        var currency = document.createElement("td");
+                        currency.innerHTML = myObj[i].currency_name;
+                        row.appendChild(currency);
+                    }
+                }
+            };
+            xhttp.open("GET", "country-objects/country-by-currency-name.json", true);
+            xhttp.send();
+            // add to the table the domain of each country
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    var myObj = JSON.parse(this.responseText);
+                    var table = document.getElementsByTagName("table")[0];
+                    for (var i = 0; i < myObj.length; i++) {
+                        var row = table.getElementsByTagName("tr")[i + 1];
+                        var domain = document.createElement("td");
+                        domain.innerHTML = myObj[i].tld;
+                        row.appendChild(domain);
+                    }
+                }
+            };
+            xhttp.open("GET", "country-objects/country-by-domain-tld.json", true);
+            xhttp.send();
+            // add to the table the flag of each country, the flag is a picture in base64
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    var myObj = JSON.parse(this.responseText);
+                    var table = document.getElementsByTagName("table")[0];
+                    for (var i = 0; i < myObj.length; i++) {
+                        var row = table.getElementsByTagName("tr")[i + 1];
+                        var flag = document.createElement("td");
+                        flag.innerHTML = "<img src='" + myObj[i].flag_base64 + "' width='50' height='50' >";
+                        row.appendChild(flag);
+                    }
+                }
+            };
+            xhttp.open("GET", "country-objects/country-by-flag.json", true);
+            xhttp.send();
 
-
-
-}
-function wait(ms){
-   var start = new Date().getTime();
-   var end = start;
-   while(end < start + ms) {
-     end = new Date().getTime();
-  }
-}
-</script>
+        }
+        function wait(ms) {
+            var start = new Date().getTime();
+            var end = start;
+            while (end < start + ms) {
+                end = new Date().getTime();
+            }
+        }
+    </script>
 
 </body>
+
 </html>

@@ -1,0 +1,35 @@
+#div1 {
+  margin:10px;
+  font-size:1.25em;
+}
+* {
+  font-size: 12px;
+  font-family:'Helvetica', Arial, Sans-Serif;
+  box-sizing: border-box;
+}
+table, th, td {
+  border-collapse:collapse;
+  border: solid 1px #ccc;
+  padding: 5px 20px;
+  text-align: center;
+}
+th {
+  background: #0f4871;
+  color: #fff;
+}
+tr:nth-child(2n) {
+  background: #f1f1f1;
+}
+td:hover {
+  color: #fff;
+  background: #CA293E;
+}
+td:focus {
+  background: #f44;
+}
+.editing {
+  border: 2px dotted #c9c9c9;
+}
+#edit {
+  display: none;
+}
