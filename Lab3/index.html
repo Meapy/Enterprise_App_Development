@@ -21,6 +21,8 @@
             border: solid 1px #ccc;
             padding: 5px 20px;
             text-align: center;
+            /* center the table */
+            margin: 0 auto;
         }
 
         th {
@@ -54,26 +56,17 @@
 <body>
 
     <div id="demo">
-        <h2>The XMLHttpRequest Object</h2>
-        <button type="button" onclick="loadDoc()">Change Content</button>
-        <button type="button" onclick="create_table()">Change Content</button>
+        <h2>Hello</h2>
+        <button type="button" onclick="create_table(true)">Load full Table</button>
+        <button type="button" onclick="create_table(false)">Load Table</button>
     </div>
 
     <script>
-        function loadDoc() {
-            const xhttp = new XMLHttpRequest();
-            xhttp.onload = function () {
-                document.getElementById("demo").innerHTML =
-                    this.responseText;
-            }
-            //open all the files in the same directory
-            xhttp.open("GET", "country-objects/country-by-flag.json");
-            xhttp.send();
-        }
-        function create_table() {
+        function create_table(full) {
             //wait 5 seconds
-            //wait(5000);
+            wait(5000);
             // creates a table and inserts the country and capital city into the table
+
             var xhttp = new XMLHttpRequest();
             xhttp.onreadystatechange = function () {
                 if (this.readyState == 4 && this.status == 200) {
@@ -83,7 +76,13 @@
                     var table_header = document.createElement("tr");
                     table_header.innerHTML = "<th>Country</th><th>Capital city</th><th>Continent</th><th>Currency</th><th>Domain</th><th>Flag</th>";
                     tblBody.appendChild(table_header);
-                    for (var i = 0; i < myObj.length; i++) {
+                    if (full === false) {
+                        var limit = 20;
+                    }
+                    else {
+                        var limit = myObj.length;
+                    }
+                    for (var i = 0; i < limit; i++) {
                         var row = document.createElement("tr");
                         var country = document.createElement("td");
                         country.innerHTML = myObj[i].country;
@@ -105,7 +104,13 @@
                 if (this.readyState == 4 && this.status == 200) {
                     var myObj = JSON.parse(this.responseText);
                     var table = document.getElementsByTagName("table")[0];
-                    for (var i = 0; i < myObj.length; i++) {
+                    if (full === false) {
+                        var limit = 20;
+                    }
+                    else {
+                        var limit = myObj.length;
+                    }
+                    for (var i = 0; i < limit; i++) {
                         var row = table.getElementsByTagName("tr")[i + 1];
                         var continent = document.createElement("td");
                         continent.innerHTML = myObj[i].continent;
@@ -121,7 +126,13 @@
                 if (this.readyState == 4 && this.status == 200) {
                     var myObj = JSON.parse(this.responseText);
                     var table = document.getElementsByTagName("table")[0];
-                    for (var i = 0; i < myObj.length; i++) {
+                    if (full === false) {
+                        var limit = 20;
+                    }
+                    else {
+                        var limit = myObj.length;
+                    }
+                    for (var i = 0; i < limit; i++) {
                         var row = table.getElementsByTagName("tr")[i + 1];
                         var currency = document.createElement("td");
                         currency.innerHTML = myObj[i].currency_name;
@@ -137,7 +148,13 @@
                 if (this.readyState == 4 && this.status == 200) {
                     var myObj = JSON.parse(this.responseText);
                     var table = document.getElementsByTagName("table")[0];
-                    for (var i = 0; i < myObj.length; i++) {
+                    if (full === false) {
+                        var limit = 20;
+                    }
+                    else {
+                        var limit = myObj.length;
+                    }
+                    for (var i = 0; i < limit; i++) {
                         var row = table.getElementsByTagName("tr")[i + 1];
                         var domain = document.createElement("td");
                         domain.innerHTML = myObj[i].tld;
@@ -147,13 +164,20 @@
             };
             xhttp.open("GET", "country-objects/country-by-domain-tld.json", true);
             xhttp.send();
-            // add to the table the flag of each country, the flag is a picture in base64
+            // add to the table the flag of each country
             var xhttp = new XMLHttpRequest();
+
             xhttp.onreadystatechange = function () {
                 if (this.readyState == 4 && this.status == 200) {
                     var myObj = JSON.parse(this.responseText);
                     var table = document.getElementsByTagName("table")[0];
-                    for (var i = 0; i < myObj.length; i++) {
+                    if (full === false) {
+                        var limit = 20;
+                    }
+                    else {
+                        var limit = myObj.length;
+                    }
+                    for (var i = 0; i < limit; i++) {
                         var row = table.getElementsByTagName("tr")[i + 1];
                         var flag = document.createElement("td");
                         flag.innerHTML = "<img src='" + myObj[i].flag_base64 + "' width='50' height='50' >";
@@ -163,6 +187,11 @@
             };
             xhttp.open("GET", "country-objects/country-by-flag.json", true);
             xhttp.send();
+            //paragraph to say "the tables have been created"
+            var p = document.createElement("p");
+            p.innerHTML = "The tables have been created";
+            document.body.appendChild(p);
+
 
         }
         function wait(ms) {

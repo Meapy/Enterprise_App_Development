@@ -17,8 +17,3 @@ http.createServer(function (req, res) {
   }); // you can use 'return' to ensure you stop after the (first) callback
 }).listen(8080);
 
-//create a function that makes a table from the json files in country-objects
-async function create_table() {
-
-}
-create_table();
