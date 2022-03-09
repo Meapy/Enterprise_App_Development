@@ -87,7 +87,7 @@
     <script>
         function create_table(full) {
             //wait 5 seconds
-            //wait(4600);
+            wait(4600);
             // creates a table and inserts the country and capital city into the table
             var xhttp = new XMLHttpRequest();
             xhttp.onreadystatechange = function () {
@@ -247,6 +247,7 @@
             //hide #button3
             document.getElementById("button3").style.display = "none";
             document.getElementById("button2").style.display = "none";
+            document.getElementById("button4").style.display = "none";
         }
         //jquery to fade in the table when user clicks on the create table button
         $(document).ready(function () {
