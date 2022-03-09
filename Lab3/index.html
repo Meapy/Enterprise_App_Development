@@ -44,22 +44,50 @@
         #edit {
             display: none;
         }
+        #button2, #button3, #button4, #button5{
+            display: none;
+        }
+        h2 {
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            color: #0f4871;
+        }
+        button {
+            background-color: #0f4871;
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+        }
     </style>
 </head>
 
 <body>
 
     <div id="demo">
-        <h2>Hello</h2>
+        <h2>This website implements AJAX to access JSON Objects. Ajax is short for Asynchronous JavaScript And XML. It is not a programming language. it uses a combination of 
+            JavaScript and XML to send and receive data from a server. Ajax is used to update the content of a web page without reloading the whole page.
+            JSON is a lightweight data interchange format. It is easy to parse and generate. JSON is a text format that is mostly used to send data between web applications.
+            JSON is a subset of JavaScript. JSON is not a programming language. 
+            In this website we extract the data from the JSON file and display it in a table.
+        </h2>
         <button class="button1" type="button" onclick="create_table(true)">Load full Table</button>
-        <button class="button1" type="button" onclick="create_table(false)">Load Table</button>
-        <button class="button2" type="button">Delete Table</button>
+        <button class="button1" type="button" onclick="create_table(false)">Load only 20 </button>
+        <button id="button2" type="button" onclick="delete_table()">Delete Table</button>
+        <button id="button3" type="button">Fade Table</button>
+        <button id="button4" type="button">Change colour</button>
     </div>
 
     <script>
         function create_table(full) {
             //wait 5 seconds
-            //wait(5000);
+            //wait(4600);
             // creates a table and inserts the country and capital city into the table
             var xhttp = new XMLHttpRequest();
             xhttp.onreadystatechange = function () {
@@ -90,8 +118,10 @@
                     document.body.appendChild(table);
                 }
             };
+            
             xhttp.open("GET", "country-objects/country-by-capital-city.json", true);
             xhttp.send();
+            wait(100);
             // add to the table the continent of each country 
             var xhttp = new XMLHttpRequest();
             xhttp.onreadystatechange = function () {
@@ -112,8 +142,10 @@
                     }
                 }
             };
+            
             xhttp.open("GET", "country-objects/country-by-continent.json", true);
             xhttp.send();
+            wait(100);
             // add to the table the currency of each country
             var xhttp = new XMLHttpRequest();
             xhttp.onreadystatechange = function () {
@@ -134,8 +166,10 @@
                     }
                 }
             };
+            
             xhttp.open("GET", "country-objects/country-by-currency-name.json", true);
             xhttp.send();
+            wait(100);
             // add to the table the domain of each country
             var xhttp = new XMLHttpRequest();
             xhttp.onreadystatechange = function () {
@@ -156,8 +190,10 @@
                     }
                 }
             };
+            
             xhttp.open("GET", "country-objects/country-by-domain-tld.json", true);
             xhttp.send();
+            wait(100);
             // add to the table the flag of each country
             var xhttp = new XMLHttpRequest();
 
@@ -188,8 +224,11 @@
             //hide create table button
             document.getElementsByClassName("button1")[0].style.display = "none";
             document.getElementsByClassName("button1")[1].style.display = "none";
+            //unhide #button3 #button2 and #button4
+            document.getElementById("button3").style.display = "inline";
+            document.getElementById("button2").style.display = "inline";
+            document.getElementById("button4").style.display = "inline";
         }
-
         function wait(ms) {
             var start = new Date().getTime();
             var end = start;
@@ -205,21 +244,10 @@
             //show create table button
             document.getElementsByClassName("button1")[0].style.display = "inline";
             document.getElementsByClassName("button1")[1].style.display = "inline";
+            //hide #button3
+            document.getElementById("button3").style.display = "none";
+            document.getElementById("button2").style.display = "none";
         }
-        // jquery to edit the table when user clicks on the cell 
-        $(document).ready(function () {
-            $("td").click(function () {
-                var text = $(this).text();
-                $(this).html("<input type='text' value='" + text + "'>");
-                $(this).children().first().focus();
-                $(this).children().first().keypress(function (e) {
-                    if (e.which == 13) {
-                        var new_text = $(this).val();
-                        $(this).parent().text(new_text);
-                    }
-                });
-            });
-        });
         //jquery to fade in the table when user clicks on the create table button
         $(document).ready(function () {
             $(".button1").click(function () {
@@ -234,6 +262,31 @@
                 });
             });
         }); 
+        //jquery to toggle the fade in and out of the table when user clicks on the toggle table button
+        $(document).ready(function () {
+            $("#button3").click(function () {
+                $("table").fadeToggle("slow");
+            });
+        });
+        //jquery to change the background colour of the table to a random colour when user clicks on the change background button
+        $(document).ready(function () {
+            $("#button4").click(function () {
+                //change the tr:nth-child(2n) background colour to a random colour
+                var table = document.getElementsByTagName("table")[0];
+                var rows = table.getElementsByTagName("tr");
+                for (var i = 0; i < rows.length; i++) {
+                    if (i % 2 === 0) {
+                        var r = Math.floor(Math.random() * 256);
+                        var g = Math.floor(Math.random() * 256);
+                        var b = Math.floor(Math.random() * 256);
+                        var rgb = "rgb(" + r + "," + g + "," + b + ")";
+                        rows[i].style.backgroundColor = rgb;
+                    }
+                }
+
+            });
+        });
+
     </script>
     <div id="edit">
         <form>
