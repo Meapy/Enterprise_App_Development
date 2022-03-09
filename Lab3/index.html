@@ -1,13 +1,8 @@
 <!DOCTYPE html>
 <html>
-
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <head>
     <style>
-        #div1 {
-            margin: 10px;
-            font-size: 1.25em;
-        }
-
         * {
             font-size: 12px;
             font-family: 'Helvetica', Arial, Sans-Serif;
@@ -21,7 +16,6 @@
             border: solid 1px #ccc;
             padding: 5px 20px;
             text-align: center;
-            /* center the table */
             margin: 0 auto;
         }
 
@@ -57,16 +51,16 @@
 
     <div id="demo">
         <h2>Hello</h2>
-        <button type="button" onclick="create_table(true)">Load full Table</button>
-        <button type="button" onclick="create_table(false)">Load Table</button>
+        <button class="button1" type="button" onclick="create_table(true)">Load full Table</button>
+        <button class="button1" type="button" onclick="create_table(false)">Load Table</button>
+        <button class="button2" type="button">Delete Table</button>
     </div>
 
     <script>
         function create_table(full) {
             //wait 5 seconds
-            wait(5000);
+            //wait(5000);
             // creates a table and inserts the country and capital city into the table
-
             var xhttp = new XMLHttpRequest();
             xhttp.onreadystatechange = function () {
                 if (this.readyState == 4 && this.status == 200) {
@@ -191,9 +185,11 @@
             var p = document.createElement("p");
             p.innerHTML = "The tables have been created";
             document.body.appendChild(p);
-
-
+            //hide create table button
+            document.getElementsByClassName("button1")[0].style.display = "none";
+            document.getElementsByClassName("button1")[1].style.display = "none";
         }
+
         function wait(ms) {
             var start = new Date().getTime();
             var end = start;
@@ -201,8 +197,50 @@
                 end = new Date().getTime();
             }
         }
+        function delete_table() {
+            var table = document.getElementsByTagName("table")[0];
+            table.parentNode.removeChild(table);
+            var p = document.getElementsByTagName("p")[0];
+            p.parentNode.removeChild(p);
+            //show create table button
+            document.getElementsByClassName("button1")[0].style.display = "inline";
+            document.getElementsByClassName("button1")[1].style.display = "inline";
+        }
+        // jquery to edit the table when user clicks on the cell 
+        $(document).ready(function () {
+            $("td").click(function () {
+                var text = $(this).text();
+                $(this).html("<input type='text' value='" + text + "'>");
+                $(this).children().first().focus();
+                $(this).children().first().keypress(function (e) {
+                    if (e.which == 13) {
+                        var new_text = $(this).val();
+                        $(this).parent().text(new_text);
+                    }
+                });
+            });
+        });
+        //jquery to fade in the table when user clicks on the create table button
+        $(document).ready(function () {
+            $(".button1").click(function () {
+                $("table").fadeIn("slow");
+            });
+        });
+        //jquery to fade out the table when user clicks on the delete table button and then delete the table
+        $(document).ready(function () {
+            $(".button2").click(function () {
+                $("table").fadeOut("slow", function () {
+                    delete_table();
+                });
+            });
+        }); 
     </script>
-
+    <div id="edit">
+        <form>
+            <input type="text" id="text" value="To edit..." />
+            <input type="submit" value="Save" />
+        </form>
+    </div>
 </body>
 
 </html>
