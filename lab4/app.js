@@ -126,3 +126,31 @@ app.put('/color/:id', (req, res) => {
     }
     );
 });
+//delete request that removes a color from the colors.json file
+app.delete('/color/:id', (req, res) => {
+    //read the file colors.json
+    fs.readFile('data/colors.json', 'utf8', (err, data) => {
+        if (err) throw err;
+        //parse the file into a JSON object
+        let colors = JSON.parse(data);
+        //loop through the colors array
+        for (let i = 0; i < colors.length; i++) {
+            //if the id matches the id in the url, remove the color from the array
+            if (colors[i].colorId == req.params.id) {
+                colors.splice(i, 1);
+            }
+        }
+        //write the colors array to the colors.json file
+        fs.writeFile('data/colors.json', JSON.stringify(colors), (err) => {
+            if (err) throw err;
+            console.log('The file has been saved!');
+        });
+        //send the modified color details to the client
+        res.redirect('/color/' + req.params.id);
+    }
+    );
+});
+//error handling
+app.use((req, res, next) => {
+    res.status(404).send('Sorry cant find that!');
+});
