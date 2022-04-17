@@ -32,7 +32,6 @@ app.get('/color', (req, res) => {
             <td>${colors[i].colorId}</td> <td>${colors[i].name}</td> 
             <td>${colors[i].hexString}</td> <td bgcolor=\'${colors[i].hexString}\'></td> 
             </tr> \n`;
-
         }
         //send the table to the client
         res.write(htmlcode);
@@ -43,7 +42,7 @@ app.get('/color', (req, res) => {
     );
 });
 //get details of a specific colour by id
-app.get('/?color/:id', (req, res) => {
+app.get('/color/:id', (req, res) => {
     //read the file colors.json
     fs.readFile('data/colors.json', 'utf8', (err, data) => {
         if (err) throw err;
@@ -53,11 +52,11 @@ app.get('/?color/:id', (req, res) => {
         for (let i = 0; i < colors.length; i++) {
             //if the id matches the id in the url, send the color details to the client
             if (colors[i].colorId == req.params.id) {
-                res.write(`<table> <tr> <th>ID</th> <th>Name</th> <th>Hex</th> <th>Color</th> </tr>`)
+                res.write(`<table> <tr> <th>ID</th> <th>Name</th> <th>Hex</th> <th>Color</th> <th>RGB</th> </tr>`)
                 res.write(`<tr> 
                 <td>${colors[i].colorId}</td> <td>${colors[i].name}</td> 
                 <td>${colors[i].hexString}</td> <td bgcolor=\'${colors[i].hexString}\'></td> 
-                <td>${colors[i].rgb['r']}</td> <td>${colors[i].rgb['g']}</td> <td>${colors[i].rgb['g']}</td>
+                <td>${colors[i].rgb['r']} ${colors[i].rgb['g']} ${colors[i].rgb['b']}</td>
                 </tr> \n`);
                 res.end();
             }
@@ -97,6 +96,33 @@ app.post('/addcolor', (req, res) => {
 
         //send the new color details to the client
         res.redirect('/color/' + newColor.colorId);
+    }
+    );
+});
+//put request that modifies the data in the colors.json file
+app.put('/color/:id', (req, res) => {
+    //read the file colors.json
+    fs.readFile('data/colors.json', 'utf8', (err, data) => {
+        if (err) throw err;
+        //parse the file into a JSON object
+        let colors = JSON.parse(data);
+        //loop through the colors array
+        for (let i = 0; i < colors.length; i++) {
+            //if the id matches the id in the url, modify the color details
+            if (colors[i].colorId == req.params.id) {
+                colors[i].name = req.body.name;
+                colors[i].hexString = req.body.hexString;
+                colors[i].rgb = req.body.rgb;
+                colors[i].hsl = req.body.hsl;
+            }
+        }
+        //write the colors array to the colors.json file
+        fs.writeFile('data/colors.json', JSON.stringify(colors), (err) => {
+            if (err) throw err;
+            console.log('The file has been saved!');
+        });
+        //send the modified color details to the client
+        res.redirect('/color/' + req.params.id);
     }
     );
 });
