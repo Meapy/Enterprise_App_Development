@@ -2,6 +2,8 @@ const express = require('express'); //Import the express dependency
 const app = express();              //Instantiate an express app, the main work horse of this server
 const port = 5000;                  //Save the port number where your server will be listening
 const fs = require('fs');
+const bodyParser = require("body-parser");
+app.use(bodyParser.urlencoded({ extended: true }))
 
 //Idiomatic expression in express to route and respond to a client request
 app.get('/', (req, res) => {        //get requests to the root ("/") will route here
@@ -22,7 +24,7 @@ app.get('/color', (req, res) => {
         res.write('<table> <tr> <th>ID</th> <th>Name</th> <th>Hex</th> <th>Color</th> </tr>')
         //console.log(colors);
         //loop through the colors array
-        var htmlcode;
+        var htmlcode = "";
         for (let i = 0; i < colors.length; i++) {
             //add a row to the table for each color
             htmlcode =  htmlcode + 
@@ -35,11 +37,60 @@ app.get('/color', (req, res) => {
         //send the table to the client
         res.write(htmlcode);
         res.end();
-
-        //remove 'undefined' from the beginning body of the response
+        return colors;
 
     }
     );
-
-
 });
+//get details of a specific colour by id
+app.get('/?color/:id', (req, res) => {
+    //read the file colors.json
+    fs.readFile('data/colors.json', 'utf8', (err, data) => {
+        if (err) throw err;
+        //parse the file into a JSON object
+        let colors = JSON.parse(data);
+        //loop through the colors array
+        for (let i = 0; i < colors.length; i++) {
+            //if the id matches the id in the url, send the color details to the client
+            if (colors[i].colorId == req.params.id) {
+                res.write(`<table> <tr> <th>ID</th> <th>Name</th> <th>Hex</th> <th>Color</th> </tr>`)
+                res.write(`<tr> 
+                <td>${colors[i].colorId}</td> <td>${colors[i].name}</td> 
+                <td>${colors[i].hexString}</td> <td bgcolor=\'${colors[i].hexString}\'></td> 
+                <td>${colors[i].rgb['r']}</td> <td>${colors[i].rgb['g']}</td> <td>${colors[i].rgb['g']}</td>
+                </tr> \n`);
+                res.end();
+            }
+        }
+    }
+    );
+});
+
+//create a post request that just displays the data sent by the client
+app.post('/', (req, res) => {
+    console.log(req.body);
+    // go to the colorid page
+    res.redirect('/color/' + req.body.colorid);
+});
+
+// // create a new color and add to the colors.json file
+// app.post('/color', (req, res) => {
+//     //read the file colors.json
+//     fs.readFile('data/colors.json', 'utf8', (err, data) => {
+//         if (err) throw err;
+//         //parse the file into a JSON object
+//         let colors = JSON.parse(data);
+//         //get the new color details from the client
+//         let newColor = req.body;
+//         //add the new color to the colors array
+//         colors.push(newColor);
+//         //write the colors array to the colors.json file
+//         fs.writeFile('data/colors.json', JSON.stringify(colors), (err) => {
+//             if (err) throw err;
+//             console.log('The file has been saved!');
+//         });
+//         //send the new color details to the client
+//         res.send(newColor);
+//     }
+//     );
+// });
