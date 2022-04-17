@@ -11,35 +11,12 @@
     <!-- create a box where color details(colorID, hex, rgb, hsl and name)-->
     <!-- get the information from app.js-->
 
-    <!-- create buttons to show, insert, remove and modify color-->
-    <div class="buttons">
-        <button class="show">Show</button>
-        <button class="insert">Insert</button>
-        <button class="remove">Remove</button>
-        <button class="modify">Modify</button>
-    </div>
 
     <!-- create a form to get a color id and then go to the url to /color/colorid -->
-    <form method="Post">
+    <form action="/color/" method="Post">
         <input type="text" name="colorid" id="colorid" placeholder="ColorID">
-        <input class="buttons" type="submit">
+        <input class="buttons" type="submit" value="Show Colour">
     </form>
 
-    <!-- create a form to insert color-->
-    <div class="insertForm">
-        <form action="">
-            <label for="colorID">Color ID:</label>
-            <input type="text" name="colorID" id="colorID">
-            <label for="colorHex">Color Hex:</label>
-            <input type="text" name="colorHex" id="colorHex">
-            <label for="colorRGB">Color RGB:</label>
-            <input type="text" name="colorRGB" id="colorRGB">
-            <label for="colorHSL">Color HSL:</label>
-            <input type="text" name="colorHSL" id="colorHSL">
-            <label for="colorName">Color Name:</label>
-            <input type="text" name="colorName" id="colorName">
-            <button class="insertColor">Insert Color</button>
-        </form>
-    </div>
     
 </body>

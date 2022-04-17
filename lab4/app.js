@@ -67,30 +67,36 @@ app.get('/?color/:id', (req, res) => {
 });
 
 //create a post request that just displays the data sent by the client
-app.post('/', (req, res) => {
+app.post('/color/', (req, res) => {
     console.log(req.body);
     // go to the colorid page
     res.redirect('/color/' + req.body.colorid);
 });
 
-// // create a new color and add to the colors.json file
-// app.post('/color', (req, res) => {
-//     //read the file colors.json
-//     fs.readFile('data/colors.json', 'utf8', (err, data) => {
-//         if (err) throw err;
-//         //parse the file into a JSON object
-//         let colors = JSON.parse(data);
-//         //get the new color details from the client
-//         let newColor = req.body;
-//         //add the new color to the colors array
-//         colors.push(newColor);
-//         //write the colors array to the colors.json file
-//         fs.writeFile('data/colors.json', JSON.stringify(colors), (err) => {
-//             if (err) throw err;
-//             console.log('The file has been saved!');
-//         });
-//         //send the new color details to the client
-//         res.send(newColor);
-//     }
-//     );
-// });
+// create a new color and add to the colors.json file
+app.post('/addcolor', (req, res) => {
+    //read the file colors.json
+    fs.readFile('data/colors.json', 'utf8', (err, data) => {
+        if (err) throw err;
+        let colors = JSON.parse(data);
+        let newColor = req.body;
+
+
+        newColor.colorId = parseInt(newColor.colorId);
+        let rgb = newColor.rgb.split(',');
+        newColor.rgb = {r: parseInt(rgb[0]), g: parseInt(rgb[1]), b: parseInt(rgb[2])};
+        let hsl = newColor.hsl.split(',');
+        newColor.hsl = {h: parseInt(hsl[0]), s: parseInt(hsl[1]), l: parseInt(hsl[2])};
+        colors.push(newColor);
+
+        //write the colors array to the colors.json file
+        fs.writeFile('data/colors.json', JSON.stringify(colors), (err) => {
+            if (err) throw err;
+            console.log('The file has been saved!');
+        });
+
+        //send the new color details to the client
+        res.redirect('/color/' + newColor.colorId);
+    }
+    );
+});
