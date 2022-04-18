@@ -1,11 +1,13 @@
 const express = require('express');
 var router = express.Router();
-const app = express();              //Instantiate an express app, the main work horse of this server
-const port = 5000;                  //Save the port number where your server will be listening
+var methodOverride = require('method-override')
+const app = express();              
+const port = 5000;                  
 const fs = require('fs');
 const bodyParser = require("body-parser");
 const { Router } = require('express');
 app.use(bodyParser.urlencoded({ extended: true }))
+app.use(methodOverride('_method'))
 
 app.set('view engine', 'jade');
 
@@ -17,6 +19,15 @@ app.get('/', (req, res) => {        //get requests to the root ("/") will route 
     res.sendFile('index.html', { root: __dirname });      //server responds by sending the index.html file to the client's browser
     //the .sendFile method needs the absolute path to the file, see: https://expressjs.com/en/4x/api.html#res.sendFile 
 });
+
+app.use(methodOverride(function (req, res) {
+    if (req.body && typeof req.body === 'object' && '_method' in req.body) {
+      // look in urlencoded POST bodies and delete it
+      var method = req.body._method
+      delete req.body._method
+      return method
+    }
+  }))
 
 app.listen(port, () => {            //server starts listening for any attempts from a client to connect at port: {port}
     console.log(`Now listening on port ${port}`);
@@ -81,7 +92,6 @@ app.get('/color/:id', (req, res) => {
 
 //create a post request that just displays the data sent by the client
 app.post('/color/', (req, res) => {
-    console.log(req.body);
     // go to the colorid page
     res.redirect('/color/' + req.body.colorid);
 });
@@ -159,17 +169,17 @@ app.put('/color/:id', (req, res) => {
     );
 });
 //delete request that removes a color from the colors.json file
-app.post('/deletecolor', (req, res) => {
+app.delete('/color/:id', (req, res) => {
     //read the file colors.json
     fs.readFile('data/colors.json', 'utf8', (err, data) => {
         if (err) throw err;
-        //console.log(req.body.colorid)
+        console.log(req.params.id)
         //parse the file into a JSON object
         let colors = JSON.parse(data);
         //loop through the colors array
         for (let i = 0; i < colors.length; i++) {
             //if the id matches the id in the url, remove the color from the array
-            if (colors[i].colorId == req.body.colorid) {
+            if (colors[i].colorId == req.params.id) {
                 colors.splice(i, 1);
             }
         }
@@ -179,7 +189,8 @@ app.post('/deletecolor', (req, res) => {
             console.log('The file has been saved!');
         });
         //send the modified color details to the client
-        res.redirect('/color/');
+        res.write('<h1>Color deleted</h1>');
+        res.end();
     }
     );
 });
@@ -197,3 +208,4 @@ app.get('/404', (req, res) => {
     res.write('<h1>404 Page Not Found</h1>');
     res.end();
 });
+

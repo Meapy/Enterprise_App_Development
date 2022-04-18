@@ -3,6 +3,10 @@
 <head>
     <title>Lab 4</title>
     <link rel="stylesheet" type="text/css" href="../css/styles.css">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
 </head>
 
 <body>
@@ -33,12 +37,34 @@
             <div id="color" style="background-color: <%= bgcolour %>;">
         </form>
     </div>
-    <!-- form to delete a colour using the delete request method -->
+    <!-- form to delete a colour using the delete request method
     <form action="/deletecolor" method="Post">
         <input type="text" name="colorid" id="colorid" placeholder="ColorID" value=<%=colorId %>>
         <input class="buttons" type="submit" value="Delete Colour">
+    </form> -->
+    <!-- form to delete a colour using the delete request method -->
+    <form class="delete-form">
+        <input type="text" name="colorid" id="colorid" placeholder="ColorID" value=<%=colorId %>>
+        <input class="buttons" type="submit"name= "submit">
     </form>
+    <script>
+        // function to send a delete request to the server app.delete('/color/:id', (req, res)
+        $(document).ready(function() {
+            $('.delete-form').submit(function(event) {
+                event.preventDefault();
+                var form = $(this);
+                var url = form.attr('action');
+                $.ajax({
+                    type: 'DELETE',
+                    url: url,
+                    success: function(result) {
+                        alert('Color Deleted');
+                    }
+                });
+            });
+        });
 
+    </script>
 
 
 
@@ -89,10 +115,5 @@
             margin-right: 10px;
         }
     </style>
-    </style>
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
-
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
-        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-
+    
 </body>
