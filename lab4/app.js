@@ -7,27 +7,15 @@ const fs = require('fs');
 const bodyParser = require("body-parser");
 const { Router } = require('express');
 app.use(bodyParser.urlencoded({ extended: true }))
-app.use(methodOverride('_method'))
-
-app.set('view engine', 'jade');
 
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html');
 
 //Idiomatic expression in express to route and respond to a client request
 app.get('/', (req, res) => {        //get requests to the root ("/") will route here
-    res.sendFile('index.html', { root: __dirname });      //server responds by sending the index.html file to the client's browser
-    //the .sendFile method needs the absolute path to the file, see: https://expressjs.com/en/4x/api.html#res.sendFile 
-});
+    res.render(__dirname + "/index" , { colorId: "", hexString: "", rgb: "", hsl: "", name: "", bgcolour: ""});
 
-app.use(methodOverride(function (req, res) {
-    if (req.body && typeof req.body === 'object' && '_method' in req.body) {
-      // look in urlencoded POST bodies and delete it
-      var method = req.body._method
-      delete req.body._method
-      return method
-    }
-  }))
+});
 
 app.listen(port, () => {            //server starts listening for any attempts from a client to connect at port: {port}
     console.log(`Now listening on port ${port}`);
@@ -72,19 +60,13 @@ app.get('/color/:id', (req, res) => {
                     rgb:colors[i].rgb['r'] +","+ colors[i].rgb['g'] +","+ colors[i].rgb['b'] , 
                     hsl: colors[i].hsl['h'] +"," + colors[i].hsl['s'] +"," + colors[i].hsl['l'], 
                     name: colors[i].name, bgcolour: colors[i].hexString});
-
-                // res.write(`<table> <tr> <th>ID</th> <th>Name</th> <th>Hex</th> <th>Color</th> <th>RGB</th> </tr>`)
-                // res.write(`<tr> 
-                // <td>${colors[i].colorId}</td> <td>${colors[i].name}</td> 
-                // <td>${colors[i].hexString}</td> <td bgcolor=\'${colors[i].hexString}\'></td> 
-                // <td>${colors[i].rgb['r']} ${colors[i].rgb['g']} ${colors[i].rgb['b']}</td>
-                // </tr> \n`);
-                // res.end();
                 return
             }
         }
-
-        res.write('<h1>No color found</h1>');
+        
+        //say no color was found with option to go back to the home page
+        res.write('<h1>No color found with id: ' + req.params.id + '</h1>');
+        res.write('<a href="/">Go back to home page</a>');
         res.end();
     }
     );

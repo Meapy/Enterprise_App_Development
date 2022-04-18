@@ -23,7 +23,7 @@
     <div class="showForm">
         <form action="/addcolor" method="Post">
             <label for="colorId">Color ID:</label>
-            <input type="text" name="colorId" id="colorId" value=<%=colorId %>>
+            <input type="text" name="colorId" placeholder="ColorID" id="colorId" value=<%=colorId %>>
             <label for="hexString">Color Hex:</label>
             <input type="text" name="hexString" id="hexString" value=<%=hexString %>>
             <label for="rgb">Color RGB:</label>
@@ -45,7 +45,7 @@
     <!-- form to delete a colour using the delete request method -->
     <form class="delete-form">
         <input type="text" name="colorid" id="colorid" placeholder="ColorID" value=<%=colorId %>>
-        <input class="buttons" type="submit"name= "submit">
+        <button class="insertColor" type="submit" name= "submit">Delete Colour</button>
     </form>
     <script>
         // function to send a delete request to the server app.delete('/color/:id', (req, res)
@@ -61,6 +61,10 @@
                         alert('Color Deleted');
                     }
                 });
+                //redirect to the home page
+                window.location.href = '/';
+
+
             });
         });
 
