@@ -3838,5 +3838,20 @@
             "l": 93
         },
         "name": "Grey93"
+    },
+    {
+        "colorId": 266,
+        "hexString": "#eeeeee",
+        "rgb": {
+            "r": 255,
+            "g": 0,
+            "b": 0
+        },
+        "hsl": {
+            "h": 222,
+            "s": 0,
+            "l": 0
+        },
+        "name": "first"
     }
 ]

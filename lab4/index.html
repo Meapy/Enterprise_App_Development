@@ -13,6 +13,54 @@
         <input type="text" name="colorid" id="colorid" placeholder="ColorID">
         <input class="buttons" type="submit" value="Show Colour">
     </form>
+    <!-- create a div where colorid, hex string, rgb, hsl and colourname will be displayed in -->
+    <!-- create a form to show color-->
 
-    
+    <div class="showForm">
+        <form action="/addcolor" method="Post">
+            <label for="colorId">Color ID:</label>
+            <input type="text" name="colorId" id="colorId">
+            <label for="hexString">Color Hex:</label>
+            <input type="text" name="hexString" id="hexString">
+            <label for="rgb">Color RGB:</label>
+            <input type="text" name="rgb" id="rgb">
+            <label for="hsl">Color HSL:</label>
+            <input type="text" name="hsl" id="hsl">
+            <label for="name">Color Name:</label>
+            <input type="text" name="name" id="name">
+            <button class="insertColor">Insert Color</button>
+        </form>
+    </div>
+    <!-- have buttons to switch to next colour-->
+    <div class="nextColor">
+        <button class="next">Next Color</button>
+        <button class="previous">Previous Color</button>
+    </div>
+
+    <!-- css to center and style the content, have the labels displayed one line after each other-->
+    <style>
+        .showForm {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .showForm label {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .showForm input {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .showForm button {
+            display: block;
+            margin-bottom: 10px;
+        }
+    </style>
+
+
 </body>

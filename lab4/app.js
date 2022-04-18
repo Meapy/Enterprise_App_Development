@@ -7,12 +7,12 @@ app.use(bodyParser.urlencoded({ extended: true }))
 
 //Idiomatic expression in express to route and respond to a client request
 app.get('/', (req, res) => {        //get requests to the root ("/") will route here
-    res.sendFile('index.html', {root: __dirname});      //server responds by sending the index.html file to the client's browser
-                                                        //the .sendFile method needs the absolute path to the file, see: https://expressjs.com/en/4x/api.html#res.sendFile 
+    res.sendFile('index.html', { root: __dirname });      //server responds by sending the index.html file to the client's browser
+    //the .sendFile method needs the absolute path to the file, see: https://expressjs.com/en/4x/api.html#res.sendFile 
 });
 
 app.listen(port, () => {            //server starts listening for any attempts from a client to connect at port: {port}
-    console.log(`Now listening on port ${port}`); 
+    console.log(`Now listening on port ${port}`);
 });
 //load the data/colors.json file into the server
 app.get('/color', (req, res) => {
@@ -27,8 +27,8 @@ app.get('/color', (req, res) => {
         var htmlcode = "";
         for (let i = 0; i < colors.length; i++) {
             //add a row to the table for each color
-            htmlcode =  htmlcode + 
-            `<tr> 
+            htmlcode = htmlcode +
+                `<tr> 
             <td>${colors[i].colorId}</td> <td>${colors[i].name}</td> 
             <td>${colors[i].hexString}</td> <td bgcolor=\'${colors[i].hexString}\'></td> 
             </tr> \n`;
@@ -37,7 +37,6 @@ app.get('/color', (req, res) => {
         res.write(htmlcode);
         res.end();
         return colors;
-
     }
     );
 });
@@ -59,8 +58,11 @@ app.get('/color/:id', (req, res) => {
                 <td>${colors[i].rgb['r']} ${colors[i].rgb['g']} ${colors[i].rgb['b']}</td>
                 </tr> \n`);
                 res.end();
+                return
             }
         }
+        res.write('<h1>No color found</h1>');
+        res.end();
     }
     );
 });
@@ -79,14 +81,29 @@ app.post('/addcolor', (req, res) => {
         if (err) throw err;
         let colors = JSON.parse(data);
         let newColor = req.body;
-
+        //if newcolor contains null values or already exists, send an error message
+        if (newColor.colorId == null || newColor.name == null || newColor.hexString == null || newColor.rgb == null) {
+            res.write('<h1>Error: Please fill in all fields</h1>');
+            res.end();
+            return
+        }
+        //if the color already exists, send an error message
+        for (let i = 0; i < colors.length; i++) {
+            if (colors[i].colorId == newColor.colorId) {
+                res.write('<h1>Error: Color already exists</h1>');
+                res.end();
+                return
+            }
+        }
 
         newColor.colorId = parseInt(newColor.colorId);
         let rgb = newColor.rgb.split(',');
-        newColor.rgb = {r: parseInt(rgb[0]), g: parseInt(rgb[1]), b: parseInt(rgb[2])};
+        newColor.rgb = { r: parseInt(rgb[0]), g: parseInt(rgb[1]), b: parseInt(rgb[2]) };
         let hsl = newColor.hsl.split(',');
-        newColor.hsl = {h: parseInt(hsl[0]), s: parseInt(hsl[1]), l: parseInt(hsl[2])};
+        newColor.hsl = { h: parseInt(hsl[0]), s: parseInt(hsl[1]), l: parseInt(hsl[2]) };
         colors.push(newColor);
+
+        
 
         //write the colors array to the colors.json file
         fs.writeFile('data/colors.json', JSON.stringify(colors), (err) => {
@@ -106,7 +123,9 @@ app.put('/color/:id', (req, res) => {
         if (err) throw err;
         //parse the file into a JSON object
         let colors = JSON.parse(data);
-        //loop through the colors array
+        //loop through the colors arra
+        //if the id doesn't match, send an error message to the client
+
         for (let i = 0; i < colors.length; i++) {
             //if the id matches the id in the url, modify the color details
             if (colors[i].colorId == req.params.id) {
@@ -116,11 +135,14 @@ app.put('/color/:id', (req, res) => {
                 colors[i].hsl = req.body.hsl;
             }
         }
-        //write the colors array to the colors.json file
-        fs.writeFile('data/colors.json', JSON.stringify(colors), (err) => {
-            if (err) throw err;
-            console.log('The file has been saved!');
-        });
+
+        //write the colors array to the colors.json file if colour id is not null
+        if (req.params.id != null) {
+            fs.writeFile('data/colors.json', JSON.stringify(colors), (err) => {
+                if (err) throw err;
+                console.log('The file has been saved!');
+            });
+        }
         //send the modified color details to the client
         res.redirect('/color/' + req.params.id);
     }
