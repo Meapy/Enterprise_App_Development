@@ -1,9 +1,16 @@
-const express = require('express'); //Import the express dependency
+const express = require('express');
+var router = express.Router();
 const app = express();              //Instantiate an express app, the main work horse of this server
 const port = 5000;                  //Save the port number where your server will be listening
 const fs = require('fs');
 const bodyParser = require("body-parser");
+const { Router } = require('express');
 app.use(bodyParser.urlencoded({ extended: true }))
+
+app.set('view engine', 'jade');
+
+app.engine('html', require('ejs').renderFile);
+app.set('view engine', 'html');
 
 //Idiomatic expression in express to route and respond to a client request
 app.get('/', (req, res) => {        //get requests to the root ("/") will route here
@@ -22,7 +29,6 @@ app.get('/color', (req, res) => {
         //parse the file into a JSON object
         let colors = JSON.parse(data);
         res.write('<table> <tr> <th>ID</th> <th>Name</th> <th>Hex</th> <th>Color</th> </tr>')
-        //console.log(colors);
         //loop through the colors array
         var htmlcode = "";
         for (let i = 0; i < colors.length; i++) {
@@ -51,16 +57,22 @@ app.get('/color/:id', (req, res) => {
         for (let i = 0; i < colors.length; i++) {
             //if the id matches the id in the url, send the color details to the client
             if (colors[i].colorId == req.params.id) {
-                res.write(`<table> <tr> <th>ID</th> <th>Name</th> <th>Hex</th> <th>Color</th> <th>RGB</th> </tr>`)
-                res.write(`<tr> 
-                <td>${colors[i].colorId}</td> <td>${colors[i].name}</td> 
-                <td>${colors[i].hexString}</td> <td bgcolor=\'${colors[i].hexString}\'></td> 
-                <td>${colors[i].rgb['r']} ${colors[i].rgb['g']} ${colors[i].rgb['b']}</td>
-                </tr> \n`);
-                res.end();
+                res.render(__dirname + "/index" , { colorId: colors[i].colorId, hexString: colors[i].hexString, 
+                    rgb:colors[i].rgb['r'] +","+ colors[i].rgb['g'] +","+ colors[i].rgb['b'] , 
+                    hsl: colors[i].hsl['h'] +"," + colors[i].hsl['s'] +"," + colors[i].hsl['l'], 
+                    name: colors[i].name, bgcolour: colors[i].hexString});
+
+                // res.write(`<table> <tr> <th>ID</th> <th>Name</th> <th>Hex</th> <th>Color</th> <th>RGB</th> </tr>`)
+                // res.write(`<tr> 
+                // <td>${colors[i].colorId}</td> <td>${colors[i].name}</td> 
+                // <td>${colors[i].hexString}</td> <td bgcolor=\'${colors[i].hexString}\'></td> 
+                // <td>${colors[i].rgb['r']} ${colors[i].rgb['g']} ${colors[i].rgb['b']}</td>
+                // </tr> \n`);
+                // res.end();
                 return
             }
         }
+
         res.write('<h1>No color found</h1>');
         res.end();
     }
@@ -102,8 +114,6 @@ app.post('/addcolor', (req, res) => {
         let hsl = newColor.hsl.split(',');
         newColor.hsl = { h: parseInt(hsl[0]), s: parseInt(hsl[1]), l: parseInt(hsl[2]) };
         colors.push(newColor);
-
-        
 
         //write the colors array to the colors.json file
         fs.writeFile('data/colors.json', JSON.stringify(colors), (err) => {
@@ -149,16 +159,17 @@ app.put('/color/:id', (req, res) => {
     );
 });
 //delete request that removes a color from the colors.json file
-app.delete('/color/:id', (req, res) => {
+app.post('/deletecolor', (req, res) => {
     //read the file colors.json
     fs.readFile('data/colors.json', 'utf8', (err, data) => {
         if (err) throw err;
+        //console.log(req.body.colorid)
         //parse the file into a JSON object
         let colors = JSON.parse(data);
         //loop through the colors array
         for (let i = 0; i < colors.length; i++) {
             //if the id matches the id in the url, remove the color from the array
-            if (colors[i].colorId == req.params.id) {
+            if (colors[i].colorId == req.body.colorid) {
                 colors.splice(i, 1);
             }
         }
@@ -168,11 +179,21 @@ app.delete('/color/:id', (req, res) => {
             console.log('The file has been saved!');
         });
         //send the modified color details to the client
-        res.redirect('/color/' + req.params.id);
+        res.redirect('/color/');
     }
     );
 });
-//error handling
-app.use((req, res, next) => {
-    res.status(404).send('Sorry cant find that!');
+
+//make app.delete and app.put on /colour/ invalid requests go to the 404 page
+app.delete('/color/', (req, res) => {
+    res.redirect('/404');
+});
+app.put('/color/', (req, res) => {
+    res.redirect('/404');
+});
+
+//create a 404 page
+app.get('/404', (req, res) => {
+    res.write('<h1>404 Page Not Found</h1>');
+    res.end();
 });

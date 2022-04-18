@@ -19,22 +19,34 @@
     <div class="showForm">
         <form action="/addcolor" method="Post">
             <label for="colorId">Color ID:</label>
-            <input type="text" name="colorId" id="colorId">
+            <input type="text" name="colorId" id="colorId" value=<%=colorId %>>
             <label for="hexString">Color Hex:</label>
-            <input type="text" name="hexString" id="hexString">
+            <input type="text" name="hexString" id="hexString" value=<%=hexString %>>
             <label for="rgb">Color RGB:</label>
-            <input type="text" name="rgb" id="rgb">
+            <input type="text" name="rgb" id="rgb" value=<%=rgb %>>
             <label for="hsl">Color HSL:</label>
-            <input type="text" name="hsl" id="hsl">
+            <input type="text" name="hsl" id="hsl" value=<%=hsl %>>
             <label for="name">Color Name:</label>
-            <input type="text" name="name" id="name">
+            <input type="text" name="name" id="name" value=<%=name %>>
             <button class="insertColor">Insert Color</button>
+            <h4>Display Color:</h4>
+            <div id="color" style="background-color: <%= bgcolour %>;">
         </form>
     </div>
+    <!-- form to delete a colour using the delete request method -->
+    <form action="/deletecolor" method="Post">
+        <input type="text" name="colorid" id="colorid" placeholder="ColorID" value=<%=colorId %>>
+        <input class="buttons" type="submit" value="Delete Colour">
+    </form>
+
+
+
+
+    <button class="insertColor">remove text</button>
     <!-- have buttons to switch to next colour-->
     <div class="nextColor">
-        <button class="next">Next Color</button>
-        <button class="previous">Previous Color</button>
+        <button class="previous">previous Color</button>
+        <button class="next">next Color</button>
     </div>
 
     <!-- css to center and style the content, have the labels displayed one line after each other-->
@@ -60,7 +72,27 @@
             display: block;
             margin-bottom: 10px;
         }
-    </style>
 
+        #color {
+            width: 100px;
+            height: 100px;
+        }
+
+        .nextColor {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .nextColor button {
+            margin-right: 10px;
+        }
+    </style>
+    </style>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 
 </body>
