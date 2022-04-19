@@ -1,8 +1,8 @@
 const express = require('express');
 var router = express.Router();
 var methodOverride = require('method-override')
-const app = express();              
-const port = 5000;                  
+const app = express();
+const port = 5000;
 const fs = require('fs');
 const bodyParser = require("body-parser");
 const { Router } = require('express');
@@ -10,16 +10,19 @@ app.use(bodyParser.urlencoded({ extended: true }))
 
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html');
+app.use(express.static(__dirname + '/public'));
 
-//Idiomatic expression in express to route and respond to a client request
-app.get('/', (req, res) => {        //get requests to the root ("/") will route here
-    res.render(__dirname + "/index" , { colorId: "", hexString: "", rgb: "", hsl: "", name: "", bgcolour: ""});
 
+app.get('/', (req, res) => {
+    //res.render(__dirname + "/index", { colorId: "", hexString: "", rgb: "", hsl: "", name: "", bgcolour: "" });
+    //redirect to /color/0
+    res.redirect('/color/0');
 });
 
 app.listen(port, () => {            //server starts listening for any attempts from a client to connect at port: {port}
     console.log(`Now listening on port ${port}`);
 });
+
 //load the data/colors.json file into the server
 app.get('/color', (req, res) => {
     //read the file colors.json
@@ -56,15 +59,15 @@ app.get('/color/:id', (req, res) => {
         for (let i = 0; i < colors.length; i++) {
             //if the id matches the id in the url, send the color details to the client
             if (colors[i].colorId == req.params.id) {
-                res.render(__dirname + "/index" , { colorId: colors[i].colorId, hexString: colors[i].hexString, 
-                    rgb:colors[i].rgb['r'] +","+ colors[i].rgb['g'] +","+ colors[i].rgb['b'] , 
-                    hsl: colors[i].hsl['h'] +"," + colors[i].hsl['s'] +"," + colors[i].hsl['l'], 
-                    name: colors[i].name, bgcolour: colors[i].hexString});
+                res.render(__dirname + "/index", {
+                    colorId: colors[i].colorId, hexString: colors[i].hexString,
+                    rgb: colors[i].rgb['r'] + "," + colors[i].rgb['g'] + "," + colors[i].rgb['b'],
+                    hsl: colors[i].hsl['h'] + "," + colors[i].hsl['s'] + "," + colors[i].hsl['l'],
+                    name: colors[i].name, bgcolour: colors[i].hexString
+                });
                 return
             }
         }
-        
-        //say no color was found with option to go back to the home page
         res.write('<h1>No color found with id: ' + req.params.id + '</h1>');
         res.write('<a href="/">Go back to home page</a>');
         res.end();
@@ -72,7 +75,7 @@ app.get('/color/:id', (req, res) => {
     );
 });
 
-//create a post request that just displays the data sent by the client
+
 app.post('/color/', (req, res) => {
     // go to the colorid page
     res.redirect('/color/' + req.body.colorid);
@@ -86,15 +89,17 @@ app.post('/addcolor', (req, res) => {
         let colors = JSON.parse(data);
         let newColor = req.body;
         //if newcolor contains null values or already exists, send an error message
-        if (newColor.colorId == null || newColor.name == null || newColor.hexString == null || newColor.rgb == null) {
+        if (newColor.colorId == null || newColor.name == "" || newColor.hexString == "" || newColor.rgb == null) {
             res.write('<h1>Error: Please fill in all fields</h1>');
+            res.write('<a href="/">Go back to home page</a>');
             res.end();
             return
         }
         //if the color already exists, send an error message
         for (let i = 0; i < colors.length; i++) {
             if (colors[i].colorId == newColor.colorId) {
-                res.write('<h1>Error: Color already exists</h1>');
+                res.write('<h1>Error: Color id already exists</h1>');
+                res.write('<a href="/">Go back to home page</a>');
                 res.end();
                 return
             }
@@ -125,19 +130,21 @@ app.put('/color/:id', (req, res) => {
         if (err) throw err;
         //parse the file into a JSON object
         let colors = JSON.parse(data);
-        //loop through the colors arra
-        //if the id doesn't match, send an error message to the client
 
         for (let i = 0; i < colors.length; i++) {
             //if the id matches the id in the url, modify the color details
             if (colors[i].colorId == req.params.id) {
+                colors[i].colorId = parseInt(req.body.colorId);
                 colors[i].name = req.body.name;
                 colors[i].hexString = req.body.hexString;
-                colors[i].rgb = req.body.rgb;
-                colors[i].hsl = req.body.hsl;
+                let rgb = req.body.rgb.split(',');
+                colors[i].rgb = { r: parseInt(rgb[0]), g: parseInt(rgb[1]), b: parseInt(rgb[2]) };
+                let hsl = req.body.hsl.split(',');
+                colors[i].hsl = { h: parseInt(hsl[0]), s: parseInt(hsl[1]), l: parseInt(hsl[2]) };
+                break;
             }
         }
-
+        console.log(req.body)
         //write the colors array to the colors.json file if colour id is not null
         if (req.params.id != null) {
             fs.writeFile('data/colors.json', JSON.stringify(colors), (err) => {

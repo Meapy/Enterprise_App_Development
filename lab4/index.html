@@ -2,15 +2,16 @@
 
 <head>
     <title>Lab 4</title>
-    <link rel="stylesheet" type="text/css" href="../css/styles.css">
+    <link rel="stylesheet" type="text/css" href="/css/style.css" />
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 </head>
 
 <body>
     <h1>Lab 4 colours</h1>
+    
 
     <!-- create a form to get a color id and then go to the url to /color/colorid -->
     <form action="/color/" method="Post">
@@ -23,7 +24,7 @@
     <div class="showForm">
         <form action="/addcolor" method="Post">
             <label for="colorId">Color ID:</label>
-            <input type="text" name="colorId" placeholder="ColorID" id="colorId" value=<%=colorId %>>
+            <input type="hidden" name="colorId" placeholder="ColorID" id="colorId" value=<%=colorId %>>
             <label for="hexString">Color Hex:</label>
             <input type="text" name="hexString" id="hexString" value=<%=hexString %>>
             <label for="rgb">Color RGB:</label>
@@ -33,45 +34,27 @@
             <label for="name">Color Name:</label>
             <input type="text" name="name" id="name" value=<%=name %>>
             <button class="insertColor">Insert Color</button>
-            <h4>Display Color:</h4>
-            <div id="color" style="background-color: <%= bgcolour %>;">
         </form>
-    </div>
-    <!-- form to delete a colour using the delete request method
-    <form action="/deletecolor" method="Post">
-        <input type="text" name="colorid" id="colorid" placeholder="ColorID" value=<%=colorId %>>
-        <input class="buttons" type="submit" value="Delete Colour">
-    </form> -->
-    <!-- form to delete a colour using the delete request method -->
-    <form class="delete-form">
-        <input type="text" name="colorid" id="colorid" placeholder="ColorID" value=<%=colorId %>>
-        <button class="insertColor" type="submit" name= "submit">Delete Colour</button>
+        <!-- form save any modifcations made in the /addcolor form-->
+        <form class="modify-form">
+            <input type="hidden" name="colorid" id="colorid" placeholder="ColorID" value=<%=colorId %>>
+            <input type="hidden" name="hexString" id="hexString" value=<%=hexString %>>
+            <input type="hidden" name="rgb" id="rgb" value=<%=rgb %>>
+            <input type="hidden" name="hsl" id="hsl" value=<%=hsl %>>
+            <input type="hidden" name="name" id="name" value=<%=name %>>
+            <button class="insertColor" type="submit" name="submit">Save Changes</button>
+        </form>
+        <h4>Display Color:</h4>
+            <div id="color" style="background-color: <%= bgcolour %>;">
     </form>
-    <script>
-        // function to send a delete request to the server app.delete('/color/:id', (req, res)
-        $(document).ready(function() {
-            $('.delete-form').submit(function(event) {
-                event.preventDefault();
-                var form = $(this);
-                var url = form.attr('action');
-                $.ajax({
-                    type: 'DELETE',
-                    url: url,
-                    success: function(result) {
-                        alert('Color Deleted');
-                    }
-                });
-                //redirect to the home page
-                window.location.href = '/';
+    </div>
 
+    <form class="delete-form">
+        <input type="hidden" name="colorid" id="colorid" placeholder="ColorID" value=<%=colorId %>>
+        <button class="insertColor" type="submit" name="submit">Delete Colour</button>
+    </form>
 
-            });
-        });
-
-    </script>
-
-
-
+    
     <button class="insertColor">remove text</button>
     <!-- have buttons to switch to next colour-->
     <div class="nextColor">
@@ -79,45 +62,80 @@
         <button class="next">next Color</button>
     </div>
 
-    <!-- css to center and style the content, have the labels displayed one line after each other-->
-    <style>
-        .showForm {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
+    <script>
+        // function to send a delete request to the server app.delete('/color/:id', (req, res)
+        $(document).ready(function () {
+            $('.delete-form').submit(function (event) {
+                event.preventDefault();
+                var form = $(this);
+                var url = form.attr('action');
+                $.ajax({
+                    type: 'DELETE',
+                    url: url,
+                    success: function (result) {
+                        alert('Color Deleted' + result);
+                    }
+                });
+                //redirect to the home page
+                //window.location.href = '/';
 
-        .showForm label {
-            display: block;
-            margin-bottom: 10px;
-        }
+            });
+        });
+        // function to send a put request to the server with all the data from the form 
+        $(document).ready(function () {
+            $('.modify-form').submit(function (event) {
+                event.preventDefault();
+                var form = $(this);
+                var url = form.attr('action');
+                $.ajax({
+                    type: 'PUT',
+                    url: url,
+                    data: form.serialize(),
+                    success: function (result) {
+                        alert('Color Updated' + result);
+                        console.log(data)
+                    }
+                });
+                //redirect to the home page
+                //window.location.href = '/';
 
-        .showForm input {
-            display: block;
-            margin-bottom: 10px;
-        }
+            });
+        });
 
-        .showForm button {
-            display: block;
-            margin-bottom: 10px;
-        }
 
-        #color {
-            width: 100px;
-            height: 100px;
-        }
+        //function to go to previous color once button is clicked 
+        $(document).ready(function () {
+            $('.previous').click(function () {
+                var colorId = $('#colorId').val();
+                var url = '/color/' + (parseInt(colorId) - 1)
+                $.ajax({
+                    type: 'GET',
+                    url: url,
+                    success: function (result) {
+                        $('#colorId').val(result.colorId);
+                        $('#hexString').val(result.hexString);
+                        $('#rgb').val(result.rgb);
+                        $('#hsl').val(result.hsl);
+                        $('#name').val(result.name);
+                        $('#color').css('background-color', result.bgcolour);
+                        console.log(result)
+                    }
 
-        .nextColor {
-            display: flex;
-            flex-direction: row;
-            justify-content: center;
-            align-items: center;
-        }
+                });
 
-        .nextColor button {
-            margin-right: 10px;
-        }
-    </style>
-    
+            });
+        });
+        //function to go to next color once button is clicked
+        $(document).ready(function () {
+            $('.next').click(function () {
+                var colorId = $('#colorId').val();
+                var url = '/color/' + (parseInt(colorId) + 1);
+
+                //redirect to the url 
+                window.location.href = url;
+            });
+        });
+    </script>
+
+
 </body>
