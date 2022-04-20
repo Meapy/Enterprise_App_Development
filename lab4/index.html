@@ -33,7 +33,7 @@
             <label for="name">Color Name:</label>
             <input type="text" name="name" id="name" value=<%=name %>>
             <button class="insertColor">Insert Color</button>
-            <button class="insertColor" type="submit" name="submit">Save Changes</button>
+            <button class="saveColor" type="submit" name="submit">Save Changes</button>
         </form>
 
         <h4>Display Color:</h4>
@@ -43,7 +43,7 @@
 
     <form class="delete-form">
         <input type="hidden" name="colorid" id="colorid" placeholder="ColorID" value=<%=colorId %>>
-        <button class="insertColor" type="submit" name="submit">Delete Colour</button>
+        <button class="deleteColor" type="submit" name="submit">Delete Colour</button>
     </form>
 
     
@@ -52,30 +52,8 @@
         <button class="previous">previous Color</button>
         <button class="next">next Color</button>
     </div>
-    <!-- button to save colour and make it background color-->
-    <form action="/savecookie" method="Post"></form>
-        <button class="saveColor">save Color</button>
-    </form>
 
     <script>
-        // function to send a delete request to the server app.delete('/color/:id', (req, res)
-        $(document).ready(function () {
-            $('.delete-form').submit(function (event) {
-                event.preventDefault();
-                var form = $(this);
-                var url = form.attr('action');
-                $.ajax({
-                    type: 'DELETE',
-                    url: url,
-                    success: function (result) {
-                        alert('Color Deleted');
-                    }
-                });
-                //redirect to the home page
-                window.location.href = '/';
-
-            });
-        });
         // function to send a post request to the server with all the data from the form if insertColor is clicked
         $(document).ready(function () {
             $('.insertColor').click(function (event) {
@@ -99,23 +77,104 @@
 
             });
         });
-
-        //function to go to previous color once button is clicked 
+        //function to send a delete request to the server with the colorid if deleteColor is clicked
         $(document).ready(function () {
-            $('.previous').click(function () {
-                var colorId = $('#colorId').val();
-                var url = '/color/' + (parseInt(colorId) - 1)
-                window.location.href = url;
+            $('.deleteColor').click(function (event) {
+                event.preventDefault();
+                var form = $(this).closest('form');
+                var url = form.attr('action');
+                var data = form.serialize();
+                $.ajax({
+                    type: 'DELETE',
+                    url: url,
+                    data: data,
+                    success: function (result) {
+                        alert(result);
+                    },
+                    error: function (jqXHR, exception) {
+                        var msg = jqXHR.responseText;
+                        alert(msg);
+                    }
+                });
+
             });
         });
-        //function to go to next color once button is clicked
+        // function to send a put request to the server with all the data from the form if saveColor is clicked
         $(document).ready(function () {
-            $('.next').click(function () {
-                var colorId = $('#colorId').val();
-                var url = '/color/' + (parseInt(colorId) + 1);
+            $('.saveColor').click(function (event) {
+                event.preventDefault();
+                var form = $(this).closest('form');
+                var url = form.attr('action');
+                var data = form.serialize();
+                $.ajax({
+                    type: 'PUT',
+                    url: url,
+                    data: data,
+                    success: function (result) {
+                        alert(result);
+                    },
+                    error: function (jqXHR, exception) {
+                        var msg = jqXHR.responseText;
+                        alert(msg);
+                    }
+                });
 
-                //redirect to the url 
-                window.location.href = url;
+            });
+        });
+        // function to send a post request to get the next colour if next is clicked
+        $(document).ready(function () {
+            $('.next').click(function (event) {
+                event.preventDefault();
+                //get the colorid and put it into a data object
+                var colorid = $('#colorId').val();
+                // create a data object
+                var data = {
+                    colorid: colorid
+                };
+
+                console.log(colorid)
+                $.ajax({
+                    type: 'POST',
+                    url: '/next/' + colorid,
+                    data: data,
+                    success: function (result) {
+                        //redirect to the result
+                        window.location.href = '/color/' + result;
+                    },
+                    error: function (jqXHR, exception) {
+                        var msg = jqXHR.responseText;
+                        alert(msg);
+                    }
+                });
+
+            });
+        });
+        //function to send a post request to get the previous colour if previous is clicked
+        $(document).ready(function () {
+            $('.previous').click(function (event) {
+                event.preventDefault();
+                //get the colorid and put it into a data object
+                var colorid = $('#colorId').val();
+                // create a data object
+                var data = {
+                    colorid: colorid
+                };
+
+                console.log(colorid)
+                $.ajax({
+                    type: 'POST',
+                    url: '/previous/' + colorid,
+                    data: data,
+                    success: function (result) {
+                        //redirect to the result
+                        window.location.href = '/color/' + result;
+                    },
+                    error: function (jqXHR, exception) {
+                        var msg = jqXHR.responseText;
+                        alert(msg);
+                    }
+                });
+
             });
         });
         //function to clear the form

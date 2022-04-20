@@ -61,7 +61,7 @@ app.get('/color/:id', (req, res) => {
                     hsl: colors[i].hsl['h'] + "," + colors[i].hsl['s'] + "," + colors[i].hsl['l'],
                     name: colors[i].name, bgcolour: colors[i].hexString
                 });
-                
+
                 return;
             }
         }
@@ -123,7 +123,6 @@ app.put('/color/:id', (req, res) => {
         if (err) throw err;
         //parse the file into a JSON object
         let colors = JSON.parse(data);
-        let cancall = false;
         for (let i = 0; i < colors.length; i++) {
             //if the id matches the id in the url, modify the color details
             if (colors[i].colorId == req.params.id) {
@@ -134,21 +133,22 @@ app.put('/color/:id', (req, res) => {
                 colors[i].rgb = { r: parseInt(rgb[0]), g: parseInt(rgb[1]), b: parseInt(rgb[2]) };
                 let hsl = req.body.hsl.split(',');
                 colors[i].hsl = { h: parseInt(hsl[0]), s: parseInt(hsl[1]), l: parseInt(hsl[2]) };
-                cancall = true;
-                break;
-                
+
+                if (req.params.id != null) {
+                    fs.writeFile('data/colors.json', JSON.stringify(colors), (err) => {
+                        if (err) throw err;
+                        console.log('The file has been saved!');
+                    });
+                }
+                //return success message
+                res.status(200).send("Color updated");
+                return;
+
             }
         }
-
-        if (req.params.id != null && cancall) {
-            fs.writeFile('data/colors.json', JSON.stringify(colors), (err) => {
-                if (err) throw err;
-                console.log('The file has been saved!');
-                cancall = false;
-            });
-        }
-        //send the modified color details to the client
-        res.redirect('/color/' + req.params.id);
+        //return error message
+        res.status(400).send("Error: Color not updated");
+    
     }
     );
 });
@@ -179,11 +179,72 @@ app.delete('/color/:id', (req, res) => {
     );
 });
 
-//save the last color id the user visited and save it as a cookie, then when the user visits the home page, the last visited color is displayed
-app.get('/', (req, res) => {
 
-    
-    res.redirect('/color/0');
+app.get('/', (req, res) => {
+    //read the file colors.json
+    fs.readFile('data/colors.json', 'utf8', (err, data) => {
+        //parse the file into a JSON object
+        let colors = JSON.parse(data);
+        //go to the first color in the colors array
+        res.redirect('/color/' + colors[0].colorId);
+    }
+    );
+
+});
+//create a post request that goes to the next color in the colors array
+app.post('/next/:id', (req, res) => {
+    //read the file colors.json
+    fs.readFile('data/colors.json', 'utf8', (err, data) => {
+        if (err) throw err;
+        //parse the file into a JSON object
+        let colors = JSON.parse(data);
+        console.log(req.params.id);
+        //loop through the colors array
+        for (let i = 0; i < colors.length; i++) {
+            //if the id matches the id in the url, go to the next color
+            if (colors[i].colorId == req.params.id) {
+                if (i == colors.length - 1) {
+                    res.status(200).send(""+colors[0].colorId);
+                    return;
+                }
+                else {
+                    res.status(200).send(""+ colors[i + 1].colorId);
+                    return;
+                }
+            }
+        }
+        //return error message
+        res.status(400).send("Error: Color not found");
+    }
+    );
+});
+
+//create a post request that goes to the previous color in the colors array
+app.post('/previous/:id', (req, res) => {
+    //read the file colors.json
+    fs.readFile('data/colors.json', 'utf8', (err, data) => {
+        if (err) throw err;
+        //parse the file into a JSON object
+        let colors = JSON.parse(data);
+        console.log(req.params.id);
+        //loop through the colors array
+        for (let i = 0; i < colors.length; i++) {
+            //if the id matches the id in the url, go to the previous color
+            if (colors[i].colorId == req.params.id) {
+                if (i == 0) {
+                    res.status(200).send(""+ colors[colors.length - 1].colorId);
+                    return;
+                }
+                else {
+                    res.status(200).send(""+ colors[i - 1].colorId);
+                    return;
+                }
+            }
+        }
+        //return error message
+        res.status(400).send("Error: Color not found");
+    }
+    );
 });
 
 
