@@ -12,8 +12,6 @@
 <body style="background-color: <%= cbgcolour %>;">
     <h1>Lab 4 colours</h1>
 
-
-    <!-- create a form to get a color id and then go to the url to /color/colorid -->
     <form action="/color/" method="Post">
         <input type="text" name="colorid" id="colorid" placeholder="ColorID">
         <input class="buttons" type="submit" value="Show Colour">
@@ -42,8 +40,6 @@
         <div id="color" style="background-color: <%= bgcolour %>;">
             </form>
         </div>
-
-
 
         <!-- have buttons to switch to next colour-->
         <div class="nextColor">
@@ -143,8 +139,7 @@
                         window.location.href = '/color/' + result;
                     },
                     error: function (jqXHR, exception) {
-                        var msg = jqXHR.responseText;
-                        alert(msg);
+                        alert("Error: make sure the color id is written correctly");
                     }
                 });
 
@@ -156,7 +151,6 @@
                 event.preventDefault();
                 //get the colorid and put it into a data object
                 var colorid = $('#colorId').val();
-                // create a data object
                 var data = {
                     colorid: colorid
                 };
@@ -170,8 +164,7 @@
                         window.location.href = '/color/' + result;
                     },
                     error: function (jqXHR, exception) {
-                        var msg = jqXHR.responseText;
-                        alert(msg);
+                        alert("Error: make sure the color id is written correctly");
                     }
                 });
             });

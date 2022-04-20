@@ -52,7 +52,6 @@ app.get('/color/:id', (req, res) => {
         if (err) throw err;
         //parse the file into a JSON object
         let colors = JSON.parse(data);
-        console.log(req.cookies)
         let bg = req.cookies.cookies.colorhex;
         //loop through the colors array
         for (let i = 0; i < colors.length; i++) {
@@ -76,7 +75,6 @@ app.get('/color/:id', (req, res) => {
                         name: colors[i].name, bgcolour: colors[i].hexString, cbgcolour: "white"
                     });
                 }
-
                 return;
             }
         }
@@ -112,7 +110,6 @@ app.post('/color/:id', (req, res) => {
                 return;
             }
         }
-
         newColor.colorId = parseInt(newColor.colorId);
         let rgb = newColor.rgb.split(',');
         newColor.rgb = { r: parseInt(rgb[0]), g: parseInt(rgb[1]), b: parseInt(rgb[2]) };
@@ -125,7 +122,6 @@ app.post('/color/:id', (req, res) => {
             if (err) throw err;
             console.log('The file has been saved!');
         });
-
         //send the new color details to the client
         res.status(201).send(newColor);
     }
@@ -155,13 +151,12 @@ app.put('/color/:id', (req, res) => {
                         console.log('The file has been saved!');
                     });
                 }
-                //return success message
+
                 res.status(200).send("Color updated");
                 return;
-
             }
         }
-        //return error message
+
         res.status(400).send("Error: Color not updated");
 
     }
@@ -188,7 +183,7 @@ app.delete('/color/:id', (req, res) => {
             console.log('The file has been saved!');
         });
         //send the modified color details to the client
-        res.write('Color deleted, going to first color');
+        res.write('Color has been deleted');
         res.end();
     }
     );
@@ -248,12 +243,12 @@ app.post('/previous/:id', (req, res) => {
 //post request to save the hex string to be used as background color as a cookie
 app.post('/cookie/', (req, res) => {
     //save the cookie 
-    console.log(req.body)
     res.cookie('cookies', req.body, { maxAge: 900000, httpOnly: true }).send(req.body.colorid);
 
 });
 
-app.get('/', (req, res) => {
+//function if user goes to wrong url, the user is redirected to the home page
+app.get('*', (req, res) => {
     //read the file colors.json
     fs.readFile('data/colors.json', 'utf8', (err, data) => {
         //parse the file into a JSON object
@@ -267,7 +262,6 @@ app.get('/', (req, res) => {
     }
     );
 });
-
 
 //make app.delete and app.put on /colour/ invalid requests go to the 404 page
 app.delete('/color/', (req, res) => {
