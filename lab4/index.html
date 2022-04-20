@@ -11,20 +11,19 @@
 
 <body>
     <h1>Lab 4 colours</h1>
-    
+
 
     <!-- create a form to get a color id and then go to the url to /color/colorid -->
     <form action="/color/" method="Post">
         <input type="text" name="colorid" id="colorid" placeholder="ColorID">
         <input class="buttons" type="submit" value="Show Colour">
     </form>
-    <!-- create a div where colorid, hex string, rgb, hsl and colourname will be displayed in -->
-    <!-- create a form to show color-->
 
     <div class="showForm">
-        <form action="/addcolor" method="Post">
+        <form class="color-details">
+            <input class="buttons" type="button" value="Clear" onclick="clearForm()">
             <label for="colorId">Color ID:</label>
-            <input type="hidden" name="colorId" placeholder="ColorID" id="colorId" value=<%=colorId %>>
+            <input name="colorId" placeholder="ColorID" id="colorId" value=<%=colorId %>>
             <label for="hexString">Color Hex:</label>
             <input type="text" name="hexString" id="hexString" value=<%=hexString %>>
             <label for="rgb">Color RGB:</label>
@@ -34,16 +33,9 @@
             <label for="name">Color Name:</label>
             <input type="text" name="name" id="name" value=<%=name %>>
             <button class="insertColor">Insert Color</button>
-        </form>
-        <!-- form save any modifcations made in the /addcolor form-->
-        <form class="modify-form">
-            <input type="hidden" name="colorid" id="colorid" placeholder="ColorID" value=<%=colorId %>>
-            <input type="hidden" name="hexString" id="hexString" value=<%=hexString %>>
-            <input type="hidden" name="rgb" id="rgb" value=<%=rgb %>>
-            <input type="hidden" name="hsl" id="hsl" value=<%=hsl %>>
-            <input type="hidden" name="name" id="name" value=<%=name %>>
             <button class="insertColor" type="submit" name="submit">Save Changes</button>
         </form>
+
         <h4>Display Color:</h4>
             <div id="color" style="background-color: <%= bgcolour %>;">
     </form>
@@ -55,12 +47,15 @@
     </form>
 
     
-    <button class="insertColor">remove text</button>
     <!-- have buttons to switch to next colour-->
     <div class="nextColor">
         <button class="previous">previous Color</button>
         <button class="next">next Color</button>
     </div>
+    <!-- button to save colour and make it background color-->
+    <form action="/savecookie" method="Post"></form>
+        <button class="saveColor">save Color</button>
+    </form>
 
     <script>
         // function to send a delete request to the server app.delete('/color/:id', (req, res)
@@ -73,56 +68,44 @@
                     type: 'DELETE',
                     url: url,
                     success: function (result) {
-                        alert('Color Deleted' + result);
+                        alert('Color Deleted');
                     }
                 });
                 //redirect to the home page
-                //window.location.href = '/';
+                window.location.href = '/';
 
             });
         });
-        // function to send a put request to the server with all the data from the form 
+        // function to send a post request to the server with all the data from the form if insertColor is clicked
         $(document).ready(function () {
-            $('.modify-form').submit(function (event) {
+            $('.insertColor').click(function (event) {
                 event.preventDefault();
-                var form = $(this);
+                var form = $(this).closest('form');
                 var url = form.attr('action');
+                var data = form.serialize();
                 $.ajax({
-                    type: 'PUT',
+                    type: 'POST',
                     url: url,
-                    data: form.serialize(),
+                    data: data,
                     success: function (result) {
-                        alert('Color Updated' + result);
-                        console.log(data)
+                        alert(result);
+                        
+                    },
+                    error: function (jqXHR, exception) {
+                        var msg = jqXHR.responseText;
+                        alert(msg);
                     }
                 });
-                //redirect to the home page
-                //window.location.href = '/';
 
             });
         });
-
 
         //function to go to previous color once button is clicked 
         $(document).ready(function () {
             $('.previous').click(function () {
                 var colorId = $('#colorId').val();
                 var url = '/color/' + (parseInt(colorId) - 1)
-                $.ajax({
-                    type: 'GET',
-                    url: url,
-                    success: function (result) {
-                        $('#colorId').val(result.colorId);
-                        $('#hexString').val(result.hexString);
-                        $('#rgb').val(result.rgb);
-                        $('#hsl').val(result.hsl);
-                        $('#name').val(result.name);
-                        $('#color').css('background-color', result.bgcolour);
-                        console.log(result)
-                    }
-
-                });
-
+                window.location.href = url;
             });
         });
         //function to go to next color once button is clicked
@@ -135,6 +118,14 @@
                 window.location.href = url;
             });
         });
+        //function to clear the form
+        function clearForm() {
+            $('#colorId').val('');
+            $('#hexString').val('');
+            $('#rgb').val('');
+            $('#hsl').val('');
+            $('#name').val('');
+        }
     </script>
 
 

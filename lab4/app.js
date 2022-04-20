@@ -12,12 +12,8 @@ app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html');
 app.use(express.static(__dirname + '/public'));
 
-
-app.get('/', (req, res) => {
-    //res.render(__dirname + "/index", { colorId: "", hexString: "", rgb: "", hsl: "", name: "", bgcolour: "" });
-    //redirect to /color/0
-    res.redirect('/color/0');
-});
+var cookieParser = require('cookie-parser');
+app.use(cookieParser());
 
 app.listen(port, () => {            //server starts listening for any attempts from a client to connect at port: {port}
     console.log(`Now listening on port ${port}`);
@@ -65,7 +61,8 @@ app.get('/color/:id', (req, res) => {
                     hsl: colors[i].hsl['h'] + "," + colors[i].hsl['s'] + "," + colors[i].hsl['l'],
                     name: colors[i].name, bgcolour: colors[i].hexString
                 });
-                return
+                
+                return;
             }
         }
         res.write('<h1>No color found with id: ' + req.params.id + '</h1>');
@@ -82,7 +79,7 @@ app.post('/color/', (req, res) => {
 });
 
 // create a new color and add to the colors.json file
-app.post('/addcolor', (req, res) => {
+app.post('/color/:id', (req, res) => {
     //read the file colors.json
     fs.readFile('data/colors.json', 'utf8', (err, data) => {
         if (err) throw err;
@@ -90,18 +87,14 @@ app.post('/addcolor', (req, res) => {
         let newColor = req.body;
         //if newcolor contains null values or already exists, send an error message
         if (newColor.colorId == null || newColor.name == "" || newColor.hexString == "" || newColor.rgb == null) {
-            res.write('<h1>Error: Please fill in all fields</h1>');
-            res.write('<a href="/">Go back to home page</a>');
-            res.end();
-            return
+            res.status(400).send("Error: Please fill in all fields");
+            return;
         }
         //if the color already exists, send an error message
         for (let i = 0; i < colors.length; i++) {
             if (colors[i].colorId == newColor.colorId) {
-                res.write('<h1>Error: Color id already exists</h1>');
-                res.write('<a href="/">Go back to home page</a>');
-                res.end();
-                return
+                res.status(400).send("Error: Color already exists");
+                return;
             }
         }
 
@@ -119,7 +112,7 @@ app.post('/addcolor', (req, res) => {
         });
 
         //send the new color details to the client
-        res.redirect('/color/' + newColor.colorId);
+        res.status(201).send(newColor);
     }
     );
 });
@@ -130,7 +123,7 @@ app.put('/color/:id', (req, res) => {
         if (err) throw err;
         //parse the file into a JSON object
         let colors = JSON.parse(data);
-
+        let cancall = false;
         for (let i = 0; i < colors.length; i++) {
             //if the id matches the id in the url, modify the color details
             if (colors[i].colorId == req.params.id) {
@@ -141,15 +134,17 @@ app.put('/color/:id', (req, res) => {
                 colors[i].rgb = { r: parseInt(rgb[0]), g: parseInt(rgb[1]), b: parseInt(rgb[2]) };
                 let hsl = req.body.hsl.split(',');
                 colors[i].hsl = { h: parseInt(hsl[0]), s: parseInt(hsl[1]), l: parseInt(hsl[2]) };
+                cancall = true;
                 break;
+                
             }
         }
-        console.log(req.body)
-        //write the colors array to the colors.json file if colour id is not null
-        if (req.params.id != null) {
+
+        if (req.params.id != null && cancall) {
             fs.writeFile('data/colors.json', JSON.stringify(colors), (err) => {
                 if (err) throw err;
                 console.log('The file has been saved!');
+                cancall = false;
             });
         }
         //send the modified color details to the client
@@ -183,6 +178,14 @@ app.delete('/color/:id', (req, res) => {
     }
     );
 });
+
+//save the last color id the user visited and save it as a cookie, then when the user visits the home page, the last visited color is displayed
+app.get('/', (req, res) => {
+
+    
+    res.redirect('/color/0');
+});
+
 
 //make app.delete and app.put on /colour/ invalid requests go to the 404 page
 app.delete('/color/', (req, res) => {
