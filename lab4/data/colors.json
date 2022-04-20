@@ -30,7 +30,7 @@
         "name": "Maroon"
     },
     {
-        "colorId": 2,
+        "colorId": 2000,
         "hexString": "#008000",
         "rgb": {
             "r": 0,
@@ -40,7 +40,7 @@
         "hsl": {
             "h": 120,
             "s": 100,
-            "l": 25
+            "l": 20
         },
         "name": "Green"
     },
@@ -3838,20 +3838,5 @@
             "l": 93
         },
         "name": "Grey93"
-    },
-    {
-        "colorId": 266,
-        "hexString": "#eeeeee",
-        "rgb": {
-            "r": 255,
-            "g": 0,
-            "b": 0
-        },
-        "hsl": {
-            "h": 222,
-            "s": 0,
-            "l": 0
-        },
-        "name": "first"
     }
 ]

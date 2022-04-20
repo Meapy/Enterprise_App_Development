@@ -26,6 +26,7 @@ app.get('/color', (req, res) => {
         if (err) throw err;
         //parse the file into a JSON object
         let colors = JSON.parse(data);
+        res.write('<a href="/">Home</a>');
         res.write('<table> <tr> <th>ID</th> <th>Name</th> <th>Hex</th> <th>Color</th> </tr>')
         //loop through the colors array
         var htmlcode = "";
@@ -148,7 +149,7 @@ app.put('/color/:id', (req, res) => {
         }
         //return error message
         res.status(400).send("Error: Color not updated");
-    
+
     }
     );
 });
@@ -173,7 +174,7 @@ app.delete('/color/:id', (req, res) => {
             console.log('The file has been saved!');
         });
         //send the modified color details to the client
-        res.write('<h1>Color deleted</h1>');
+        res.write('Color deleted');
         res.end();
     }
     );
@@ -199,22 +200,18 @@ app.post('/next/:id', (req, res) => {
         //parse the file into a JSON object
         let colors = JSON.parse(data);
         console.log(req.params.id);
+        //add 1 to the id
+        let id = parseInt(req.params.id) + 1;
         //loop through the colors array
         for (let i = 0; i < colors.length; i++) {
             //if the id matches the id in the url, go to the next color
-            if (colors[i].colorId == req.params.id) {
-                if (i == colors.length - 1) {
-                    res.status(200).send(""+colors[0].colorId);
-                    return;
-                }
-                else {
-                    res.status(200).send(""+ colors[i + 1].colorId);
-                    return;
-                }
+            if (colors[i].colorId == id) {
+                res.status(200).send("" + colors[i].colorId);
+                return;
             }
         }
-        //return error message
-        res.status(400).send("Error: Color not found");
+        //if the id is greater than the last color in the colors array, go to the first color
+        res.status(200).send("" + colors[0].colorId);
     }
     );
 });
@@ -227,25 +224,23 @@ app.post('/previous/:id', (req, res) => {
         //parse the file into a JSON object
         let colors = JSON.parse(data);
         console.log(req.params.id);
+        //subtract 1 from the id
+        let id = parseInt(req.params.id) - 1;
         //loop through the colors array
         for (let i = 0; i < colors.length; i++) {
             //if the id matches the id in the url, go to the previous color
-            if (colors[i].colorId == req.params.id) {
-                if (i == 0) {
-                    res.status(200).send(""+ colors[colors.length - 1].colorId);
-                    return;
-                }
-                else {
-                    res.status(200).send(""+ colors[i - 1].colorId);
-                    return;
-                }
+            if (colors[i].colorId == id) {
+                res.status(200).send("" + colors[i].colorId);
+                return;
             }
         }
-        //return error message
-        res.status(400).send("Error: Color not found");
+        //if the id is less than the first color in the colors array, go to the last color
+        res.status(200).send("" + colors[colors.length - 1].colorId);
     }
     );
 });
+
+
 
 
 //make app.delete and app.put on /colour/ invalid requests go to the 404 page
