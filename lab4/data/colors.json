@@ -30,7 +30,7 @@
         "name": "Maroon"
     },
     {
-        "colorId": 2000,
+        "colorId": 2,
         "hexString": "#008000",
         "rgb": {
             "r": 0,
@@ -40,7 +40,7 @@
         "hsl": {
             "h": 120,
             "s": 100,
-            "l": 20
+            "l": 25
         },
         "name": "Green"
     },
