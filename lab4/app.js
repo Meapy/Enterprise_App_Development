@@ -52,16 +52,29 @@ app.get('/color/:id', (req, res) => {
         if (err) throw err;
         //parse the file into a JSON object
         let colors = JSON.parse(data);
+        let bg = req.cookies.backgroundColor;
         //loop through the colors array
         for (let i = 0; i < colors.length; i++) {
             //if the id matches the id in the url, send the color details to the client
             if (colors[i].colorId == req.params.id) {
-                res.render(__dirname + "/index", {
-                    colorId: colors[i].colorId, hexString: colors[i].hexString,
-                    rgb: colors[i].rgb['r'] + "," + colors[i].rgb['g'] + "," + colors[i].rgb['b'],
-                    hsl: colors[i].hsl['h'] + "," + colors[i].hsl['s'] + "," + colors[i].hsl['l'],
-                    name: colors[i].name, bgcolour: colors[i].hexString
-                });
+                //if cookies are set, set the background colour to the value of the cookie
+                if (bg) {
+                    res.render(__dirname + "/index", {
+                        colorId: colors[i].colorId, hexString: colors[i].hexString,
+                        rgb: colors[i].rgb['r'] + "," + colors[i].rgb['g'] + "," + colors[i].rgb['b'],
+                        hsl: colors[i].hsl['h'] + "," + colors[i].hsl['s'] + "," + colors[i].hsl['l'],
+                        name: colors[i].name, bgcolour: colors[i].hexString, cbgcolour: bg
+                    });
+
+                }
+                else {
+                    res.render(__dirname + "/index", {
+                        colorId: colors[i].colorId, hexString: colors[i].hexString,
+                        rgb: colors[i].rgb['r'] + "," + colors[i].rgb['g'] + "," + colors[i].rgb['b'],
+                        hsl: colors[i].hsl['h'] + "," + colors[i].hsl['s'] + "," + colors[i].hsl['l'],
+                        name: colors[i].name, bgcolour: colors[i].hexString, cbgcolour: "white"
+                    });
+                }
 
                 return;
             }
@@ -174,24 +187,12 @@ app.delete('/color/:id', (req, res) => {
             console.log('The file has been saved!');
         });
         //send the modified color details to the client
-        res.write('Color deleted');
+        res.write('Color deleted, going to first color');
         res.end();
     }
     );
 });
 
-
-app.get('/', (req, res) => {
-    //read the file colors.json
-    fs.readFile('data/colors.json', 'utf8', (err, data) => {
-        //parse the file into a JSON object
-        let colors = JSON.parse(data);
-        //go to the first color in the colors array
-        res.redirect('/color/' + colors[0].colorId);
-    }
-    );
-
-});
 //create a post request that goes to the next color in the colors array
 app.post('/next/:id', (req, res) => {
     //read the file colors.json
@@ -199,19 +200,21 @@ app.post('/next/:id', (req, res) => {
         if (err) throw err;
         //parse the file into a JSON object
         let colors = JSON.parse(data);
-        console.log(req.params.id);
-        //add 1 to the id
         let id = parseInt(req.params.id) + 1;
         //loop through the colors array
         for (let i = 0; i < colors.length; i++) {
             //if the id matches the id in the url, go to the next color
-            if (colors[i].colorId == id) {
-                res.status(200).send("" + colors[i].colorId);
-                return;
+            if (colors[i].colorId == req.params.id) {
+                if (i == colors.length - 1) {
+                    res.status(200).send("" + colors[0].colorId);
+                    return;
+                }
+                else {
+                    res.status(200).send("" + colors[i + 1].colorId);
+                    return;
+                }
             }
         }
-        //if the id is greater than the last color in the colors array, go to the first color
-        res.status(200).send("" + colors[0].colorId);
     }
     );
 });
@@ -223,24 +226,45 @@ app.post('/previous/:id', (req, res) => {
         if (err) throw err;
         //parse the file into a JSON object
         let colors = JSON.parse(data);
-        console.log(req.params.id);
-        //subtract 1 from the id
-        let id = parseInt(req.params.id) - 1;
         //loop through the colors array
         for (let i = 0; i < colors.length; i++) {
             //if the id matches the id in the url, go to the previous color
-            if (colors[i].colorId == id) {
-                res.status(200).send("" + colors[i].colorId);
-                return;
+            if (colors[i].colorId == req.params.id) {
+                if (i == 0) {
+                    res.status(200).send("" + colors[colors.length - 1].colorId);
+                    return;
+                }
+                else {
+                    res.status(200).send("" + colors[i - 1].colorId);
+                    return;
+                }
             }
         }
-        //if the id is less than the first color in the colors array, go to the last color
-        res.status(200).send("" + colors[colors.length - 1].colorId);
     }
     );
 });
 
+//post request to save the hex string to be used as background color as a cookie
+app.post('/cookie/', (req, res) => {
+    //save the cookie 
+    console.log(req.body)
+    res.cookie('backgroundColor', req.body.colorhex, { maxAge: 900000, httpOnly: true }).send(req.body.colorid);
 
+});
+
+app.get('/', (req, res) => {
+    //read the file colors.json
+    fs.readFile('data/colors.json', 'utf8', (err, data) => {
+        //parse the file into a JSON object
+        let colors = JSON.parse(data);
+        //go to the first color in the colors array
+        res.redirect('/color/' + colors[0].colorId);
+    }
+    );
+    // .showform css background color to whats in the cookie
+
+
+});
 
 
 //make app.delete and app.put on /colour/ invalid requests go to the 404 page
