@@ -182,10 +182,12 @@
                 event.preventDefault();
                 //get the colorid and put it into a data object
                 var colorhex = $('#hexString').val();
+                var colorid = $('#colorId').val();
                 console.log(colorhex)
                 // create a data object
                 var data = {
-                    colorhex: colorhex
+                    colorhex: colorhex,
+                    colorid: colorid
                 };
                 console.log(colorhex)
                 $.ajax({
