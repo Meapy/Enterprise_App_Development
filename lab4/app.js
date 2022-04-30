@@ -156,9 +156,7 @@ app.put('/color/:id', (req, res) => {
                 return;
             }
         }
-
         res.status(400).send("Error: Color not updated");
-
     }
     );
 });
