@@ -1,112 +1,56 @@
-const bcrypt = require("bcrypt");
-const { mongoConnection } = require("./connection");
+const express = require("express");
+const router = express.Router();
+const joi = require("@hapi/joi");
+const models = require("../models/users");
 
-/**
- * @addUser
- */
-
-function registerUser(userData) {
-  return new Promise(async (resolve, reject) => {
-    try {
-      // check if user does not exists
-      let checkUserData = await checkIfUserExists({ email: userData.email });
-      if (checkUserData.data && checkUserData.data.length > 0) {
-        // user already exists, send response
-        return resolve({
-          error: true,
-          message: "User already exists with this credentials. Please login",
-          data: [],
-        });
-      }
-      // generate password hash
-      let passwordHash = await bcrypt.hash(userData.password, 15);
-      userData.password = passwordHash;
-
-      // add new user
-      mongoConnection
-        .collection("users")
-        .insertOne(userData, async (err, results) => {
-          if (err) {
-            console.log(err);
-            throw new Error(err);
-          }
-          //return data
-          resolve({
-            error: false,
-            data: results.ops,
-          });
-        });
-    } catch (e) {
-      reject(e);
+router.post("/login", async (req, res) => {
+  try {
+    const schema = joi.object().keys({
+      email: joi.string().email().required(),
+      password: joi.string().min(6).max(20).required(),
+    });
+    const result = schema.validate(req.body);
+    if (result.error) {
+      throw result.error.details[0].message;
     }
-  });
-}
-
-/**
- * @verifyUser
- * @param {*} userData
- */
-
-function verifyUser(userData) {
-  return new Promise(async (resolve, reject) => {
-    try {
-      let userDatafromDb = await checkIfUserExists({ email: userData.email });
-      if (userDatafromDb.data && userDatafromDb.data.length > 0) {
-        // user already exists, verify the password
-        let passwordVerification = await bcrypt.compare(
-          userData.password,
-          userDatafromDb.data[0].password
-        );
-        if (!passwordVerification) {
-          // password mismatch
-          return resolve({
-            error: true,
-            message: "Invalid email or password",
-            data: [],
-          });
-        }
-        // password verified
-        return resolve({ error: false, data: userDatafromDb.data[0] });
-      } else {
-        return resolve({
-          error: true,
-          message:
-            "There is no user exists with this credentials. Please create a new account.",
-          data: [],
-        });
-      }
-    } catch (e) {
-      console.log(e);
-      reject(e);
+    let checkUserLogin = await models.verifyUser(result.value);
+    if (checkUserLogin.error) {
+      throw checkUserLogin.message;
     }
-  });
-}
+    // set session for the logged in user
+    req.session.user = {
+      name: checkUserLogin.data.name,
+      email: checkUserLogin.data.email,
+    };
+    res.json(checkUserLogin);
+  } catch (e) {
+    res.json({ error: true, message: e });
+  }
+});
 
-/**
- * @checkIfUserExists
- */
-
-function checkIfUserExists(userData) {
-  return new Promise((resolve, reject) => {
-    try {
-      // check if user exists
-      mongoConnection
-        .collection("users")
-        .find({ email: userData.email })
-        .toArray((err, results) => {
-          if (err) {
-            console.log(err);
-            throw new Error(err);
-          }
-          resolve({ error: false, data: results });
-        });
-    } catch (e) {
-      reject(e);
+router.post("/signup", async (req, res) => {
+  try {
+    const schema = joi.object().keys({
+      name: joi.string().min(3).max(45).required(),
+      email: joi.string().email().required(),
+      password: joi.string().min(6).max(20).required(),
+    });
+    const result = schema.validate(req.body);
+    if (result.error) {
+      throw result.error.details[0].message;
     }
-  });
-}
+    let addUserResponse = await models.addUser(result.value);
+    res.json(addUserResponse);
+  } catch (e) {
+    res.json({ error: true, message: e });
+  }
+});
 
-module.exports = {
-  registerUser: registerUser,
-  verifyUser: verifyUser,
-};
+router.get("/logout", (req, res) => {
+  if (req.session.user) {
+    req.session.destroy();
+  }
+  res.redirect("/");
+});
+
+module.exports = router;

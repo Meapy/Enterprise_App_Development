@@ -7,6 +7,9 @@ const bodyParser = require("body-parser");
 const chalk = require("chalk");
 const path = require("path");
 const app = express();
+var cookieParser = require('cookie-parser');
+
+app.use(cookieParser());
 app.use(express.static(__dirname + '/assets'));
 app.use(express.static(__dirname + '/vendor'));
 // load config file
@@ -60,4 +63,3 @@ app.use("/users", require("./routes/users"));
 // start the app
 app.listen(nconf.get("port") || 5000);
 console.log("App Started...");
-redisSessionStore.connect();

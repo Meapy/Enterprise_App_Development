@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const router = express.Router();
 
+// static routes
 
 router.get("/", (req, res) => {
   if (req.session.user) {
