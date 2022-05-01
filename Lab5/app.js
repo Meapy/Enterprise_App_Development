@@ -1,46 +1,63 @@
-const express = require('express');
+const express = require("express");
+const session = require("express-session");
+const redis = require("redis");
+const redisStore = require("connect-redis")(session);
+const nconf = require("nconf");
 const bodyParser = require("body-parser");
-const redis = require('redis');
-const session = require('express-session');
-var methodOverride = require('method-override')
-var router = express.Router();
-
+const chalk = require("chalk");
+const path = require("path");
 const app = express();
-const port = 5000;
-const fs = require('fs');
-
-let RedisStore = require('connect-redis')(session);
-let redisClient = redis.createClient();
-
-app.use(bodyParser.urlencoded({ extended: true }))
-
-app.engine('html', require('ejs').renderFile);
-app.set('view engine', 'html');
 app.use(express.static(__dirname + '/assets'));
 app.use(express.static(__dirname + '/vendor'));
+// load config file
+nconf
+  .argv()
+  .env()
+  .file({
+    file: __dirname + "/config.json",
+  });
 
-var cookieParser = require('cookie-parser');
-app.use(cookieParser());
-app.use(
-    session({
-        store: new RedisStore({ client: redisClient }),
-        secret: 'keyboard cat',
-        resave: false,
-        saveUninitialized: false,
-        cookie: { maxAge: 60000 }
-    })
+// connect to redis session store
+const redisSessionStore = redis.createClient(
+  nconf.get("redisPort"),
+  nconf.get("redisHost"),
+  {
+    db: 0,
+  }
 );
 
-
-app.listen(port, () => {            //server starts listening for any attempts from a client to connect at port: {port}
-    console.log(`Now listening on port ${port}`);
+redisSessionStore.on("connect", () => {
+  console.log(
+    `${chalk.green("✓")} Connected to ${chalk.green("Redis")} Session Store`
+  );
 });
 
 
-// load index.html
-app.get('/', function (req, res) {
-    res.sendFile(__dirname + '/index.html');
-}
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+
+// session store
+app.use(
+  session({
+    secret: nconf.get("sessionSecret"),
+    cookie: {
+      maxAge: 1000 * 60 * 60 * 24 * 7, // 1 week
+    },
+    store: new redisStore({ client: redisSessionStore }),
+    resave: false,
+    saveUninitialized: false,
+  })
 );
 
+// set static path
+app.set("views", path.join(__dirname, "/views"));
+app.engine("html", require("ejs").renderFile);
 
+// routes
+app.use("/", require("./routes/static"));
+app.use("/users", require("./routes/users"));
+
+// start the app
+app.listen(nconf.get("port") || 5000);
+console.log("App Started...");
+redisSessionStore.connect();
