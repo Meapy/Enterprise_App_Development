@@ -11,10 +11,12 @@ router.post("/login", async (req, res) => {
       password: joi.string().min(6).max(20).required(),
     });
     const result = schema.validate(req.body);
+    console.log(result.value);
     if (result.error) {
       throw result.error.details[0].message;
     }
     let checkUserLogin = await models.verifyUser(result.value);
+
     if (checkUserLogin.error) {
       throw checkUserLogin.message;
     }
@@ -81,6 +83,20 @@ router.post("/update", async (req, res) => {
       picture: joi.string().required(),
       sport: joi.string().required(),
     });
+    req.session.user = {
+      name: req.body.name,
+      email: req.body.email,
+      dob: req.body.dob,
+      city: req.body.city,
+      address: req.body.address,
+      gender: req.body.gender,
+      hobbies: req.body.hobbies,
+      civilS: req.body.civilS,
+      job: req.body.job,
+      salary: req.body.salary,
+      picture: req.body.picture,
+      sport: req.body.sport,
+    };
     const result = schema.validate(req.body);
     if (result.error) {
       throw result.error.details[0].message;

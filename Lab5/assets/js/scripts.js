@@ -86,6 +86,7 @@ $(".saveData").click(function (event) {
                 alert(data.message);
                 console.log("failure", data);
             } else {
+                alert("data has been updated");
                 console.log("success", data);
                 //window.location.href = '/';
             }
