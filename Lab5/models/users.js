@@ -104,8 +104,65 @@ function checkIfUserExists(userData) {
     }
   });
 }
+/**
+ * @updateUser
+ */
+function updateUser(userData) {
+  return new Promise(async (resolve, reject) => {
+    try {
+      // check if user exists
+      let checkUserData = await checkIfUserExists({ email: userData.email });
+      if (checkUserData.data && checkUserData.data.length > 0) {
+        // user already exists, update the data
+        let updateUserData = await mongoConnection
+          .collection("users")
+          //if the document exists, update it, otherwise insert it
+          //update name, email, dob, city, address, gender, hobbies, civilS,
+          .updateOne(
+            { email: userData.email },
+            {
+              $set: {
+                name: userData.name,
+                email: userData.email,
+                dob: userData.dob,
+                city: userData.city,
+                address: userData.address,
+                gender: userData.gender,
+                hobbies: userData.hobbies,
+                civilS: userData.civilS,
+                salary: userData.salary,
+                picture: userData.picture,
+                sport: userData.sport,
+              }
+            },
+            (err, results) => {
+              if (err) {
+                console.log(err);
+                throw new Error(err);
+              }
+              resolve({
+                error: false,
+                data: results,
+              });
+            }
+          );
+      } else {
+        return resolve({
+          error: true,
+          message:
+            "There is no user exists with this credentials. Please create a new account.",
+          data: [],
+        });
+      }
+    } catch (e) {
+      console.log(e);
+      reject(e);
+    }
+  });
+}
 
 module.exports = {
   registerUser: registerUser,
   verifyUser: verifyUser,
+  updateUser : updateUser,
 };

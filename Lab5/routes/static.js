@@ -29,6 +29,7 @@ router.get("/home", function (req, res) {
     var salary = req.session.user.salary || "None";
     var picture = req.session.user.picture || "None";
     var sport = req.session.user.sport || "None";
+    console.log (req.session.user);
 
 
     return res.render("home.html", { 

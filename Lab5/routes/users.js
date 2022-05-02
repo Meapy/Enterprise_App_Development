@@ -20,8 +20,18 @@ router.post("/login", async (req, res) => {
     }
     // set session for the logged in user
     req.session.user = {
-      name: checkUserLogin.data.name,
-      email: checkUserLogin.data.email,
+      name: checkUserLogin.data.name || "None",
+      email: checkUserLogin.data.email || "None",
+      dob: checkUserLogin.data.dob || "None",
+      city: checkUserLogin.data.city || "None",
+      address: checkUserLogin.data.address || "None",
+      gender: checkUserLogin.data.gender || "None",
+      hobbies: checkUserLogin.data.hobbies || "None",
+      civilS: checkUserLogin.data.civilS || "None",
+      job: checkUserLogin.data.job || "None",
+      salary: checkUserLogin.data.salary || "None",
+      picture: checkUserLogin.data.picture || "None",
+      sport: checkUserLogin.data.sport || "None",
     };
     res.json(checkUserLogin);
   } catch (e) {
