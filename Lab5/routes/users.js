@@ -42,9 +42,13 @@ router.post("/login", async (req, res) => {
 router.post("/register", async (req, res) => {
   try {
     const schema = joi.object().keys({
-      name: joi.string().required(),
+      //name can only contain letters and numbers
+      name: joi.string().regex(/^[a-zA-Z0-9]*$/).required(),
       email: joi.string().email().required(),
-      password: joi.string().min(6).max(20).required(),
+      // pasword has to have 10 symbols and it is required to have at least one number, one Upper letter and one symbol between [$,%,£,&,@].
+      password: joi.string()
+        .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&]{10,}$/)
+        .required(),
     });
     const result = schema.validate(req.body);
     if (result.error) {

@@ -17,7 +17,7 @@ $('.register').click(function (event) {
                 alert(data.error);
             } else {
                 alert(data.success);
-                //window.location.href = '/';
+                window.location.href = '/';
             }
         }
     });
