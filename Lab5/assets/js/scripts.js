@@ -33,10 +33,10 @@ $('.login').click(function (event) {
             email: email,
             password: password
         },
-        success: function(data) {
+        success: function (data) {
             if (data.error) {
                 alert(data.message);
-                console.log("failure",data);
+                console.log("failure", data);
             } else {
                 console.log("success", data);
                 window.location.href = '/';
@@ -45,4 +45,54 @@ $('.login').click(function (event) {
     });
 }
 );
+//script to send data to the server using ajax and post method
+/*Date of Birth, City of Birth, Email, Address, 
+Gender, Hobbies, Civil state, Profession, Salary per year, 
+upload a picture, and favourite sport */
+$(".saveData").click(function (event) {
+    event.preventDefault();
+    var name = $("input[name='name']").val();
+    var email = $("input[name='email']").val();
+    var dob = $("input[name='birthday']").val();
+    var city = $("input[name='city']").val();
+    var address = $("input[name='address']").val();
+    var gender = $("input[name='gender']").val();
+    var hobbies = $("input[name='hobbies']").val();
+    var civilS = $("input[name='civilS']").val();
+    var job = $("input[name='job']").val();
+    var salary = $("input[name='salary']").val();
+    var sport = $("input[name='sport']").val();
+    var picture = $("input[name='picture']").val();
+    var data = {
+        name: name,
+        email: email,
+        dob: dob,
+        city: city,
+        address: address,
+        gender: gender,
+        hobbies: hobbies, 
+        civilS: civilS, 
+        job: job, 
+        salary: salary, 
+        picture: picture,
+        sport: sport,
+    }
+    $.ajax({
+        url: '/users/update',
+        type: 'POST',
+        data: data,
+        success: function (data) {
+            if (data.error) {
+                alert(data.message);
+                console.log("failure", data);
+            } else {
+                console.log("success", data);
+                //window.location.href = '/';
+            }
+        }
+    });
+});
+
+
+
 

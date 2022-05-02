@@ -50,6 +50,39 @@ router.post("/register", async (req, res) => {
     res.json({ error: true, message: e });
   }
 });
+//function to get data from client and save to database based on user signed in
+router.post("/update", async (req, res) => {
+  try {
+    const schema = joi.object().keys({
+      name: joi.string().required(),
+      email: joi.string().email().required(),
+      dob: joi.string().required(),
+      city: joi.string().required(),
+      address: joi.string().required(),
+      gender: joi.string().required(),
+      hobbies: joi.string().required(),
+      civilS: joi.string().required(),
+      job: joi.string().required(),
+      salary: joi.string().required(),
+      picture: joi.string().required(),
+      sport: joi.string().required(),
+    });
+    const result = schema.validate(req.body);
+    if (result.error) {
+      throw result.error.details[0].message;
+    }
+    let checkUserUpdate = await models.updateUser(result.value);
+    if (checkUserUpdate.error) {
+      throw checkUserUpdate.message;
+    }
+    res.json(checkUserUpdate);
+  } catch (e) {
+    console.log(e);
+    res.json({ error: true, message: e });
+  }
+});
+
+
 
 router.get("/logout", (req, res) => {
   if (req.session.user) {
