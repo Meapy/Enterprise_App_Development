@@ -1,10 +1,10 @@
 const bcrypt = require("bcrypt");
 const { mongoConnection } = require("./connection");
 /**
- * @addUser
+ * @registerUser
  */
 
-function addUser(userData) {
+function registerUser(userData) {
   return new Promise(async (resolve, reject) => {
     try {
       // check if user does not exists
@@ -32,7 +32,7 @@ function addUser(userData) {
           //return data
           resolve({
             error: false,
-            data: results.ops[0],
+            data: results.ops,
           });
         });
     } catch (e) {
@@ -106,6 +106,6 @@ function checkIfUserExists(userData) {
 }
 
 module.exports = {
-  addUser: addUser,
+  registerUser: registerUser,
   verifyUser: verifyUser,
 };

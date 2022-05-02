@@ -26,7 +26,6 @@ $('.login').click(function (event) {
     event.preventDefault();
     var email = $('#emailLogin').val();
     var password = $('#passwordLogin').val();
-    console.log(email);
     $.ajax({
         url: '/users/login',
         type: 'POST',
@@ -36,12 +35,11 @@ $('.login').click(function (event) {
         },
         success: function(data) {
             if (data.error) {
-                alert(data.error);
-                console.log(data);
+                alert(data.message);
+                console.log("failure",data);
             } else {
-                console.log(data);
-                alert(data.success);
-                //window.location.href = '/';
+                console.log("success", data);
+                window.location.href = '/';
             }
         }
     });
