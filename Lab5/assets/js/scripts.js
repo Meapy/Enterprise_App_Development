@@ -12,11 +12,11 @@ $('.register').click(function (event) {
             email: email,
             password: password
         },
-        function(data) {
+        success: function(data) {
             if (data.error) {
-                alert(data.error);
+                alert(data.message);
             } else {
-                alert(data.success);
+                alert("sucessfuly registered, you can login in now");
                 window.location.href = '/';
             }
         }

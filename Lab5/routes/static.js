@@ -2,7 +2,6 @@ const express = require("express");
 const { add } = require("nconf");
 const app = express();
 const router = express.Router();
-const models = require("../models/users");
 // static routes
 
 router.get("/", (req, res) => {

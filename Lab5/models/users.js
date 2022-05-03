@@ -116,8 +116,6 @@ function updateUser(userData) {
         // user already exists, update the data
         let updateUserData = await mongoConnection
           .collection("users")
-          //if the document exists, update it, otherwise insert it
-          //update name, email, dob, city, address, gender, hobbies, civilS,
           .updateOne(
             { email: userData.email },
             {
