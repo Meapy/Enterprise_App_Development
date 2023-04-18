@@ -52,7 +52,13 @@ app.get('/color/:id', (req, res) => {
         if (err) throw err;
         //parse the file into a JSON object
         let colors = JSON.parse(data);
-        let bg = req.cookies.cookies.colorhex;
+        //let bg = req.cookies.cookies.colorhex if it exists, if not set it to white
+        try {
+            var bg = req.cookies.colour.colorhex;
+        }
+        catch (err) {
+            var bg = "white";
+        }
         //loop through the colors array
         for (let i = 0; i < colors.length; i++) {
             //if the id matches the id in the url, send the color details to the client
@@ -241,7 +247,7 @@ app.post('/previous/:id', (req, res) => {
 //post request to save the hex string to be used as background color as a cookie
 app.post('/cookie/', (req, res) => {
     //save the cookie 
-    res.cookie('cookies', req.body, { maxAge: 900000, httpOnly: true }).send(req.body.colorid);
+    res.cookie('colour',req.body, { maxAge: 900000, httpOnly: true }).send(req.body.colorid);
 
 });
 
@@ -251,11 +257,11 @@ app.get('*', (req, res) => {
     fs.readFile('data/colors.json', 'utf8', (err, data) => {
         //parse the file into a JSON object
         let colors = JSON.parse(data);
-        if(req.cookies.cookies == null){
-            res.redirect('/color/' + colors[0].colorId);
+        if(req.cookies == null){
+            res.redirect('/color/' + colors[0].colorid);
         }
         else{
-            res.redirect('/color/' + colors[req.cookies.cookies.colorid].colorId);
+            res.redirect('/color/' + 0);
         }
     }
     );
