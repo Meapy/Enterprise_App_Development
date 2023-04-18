@@ -261,7 +261,7 @@ app.get('*', (req, res) => {
             res.redirect('/color/' + colors[0].colorid);
         }
         else{
-            res.redirect('/color/' + 0);
+            res.redirect('/color/' + colors[req.cookies.colour.colorid].colorId);
         }
     }
     );
